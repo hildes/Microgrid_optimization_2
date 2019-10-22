@@ -1,0 +1,22 @@
+Information concerning this particular LP
+hours considered: [0,53], including 53
+Constants:
+CAPMINBAT = 0.0
+CAPMAXBAT = 10.0
+CAPEXVARIABLEBAT = 470
+PRATEDMINSOLAR = 0
+PRATEDMAXSOLAR = 25
+CAPEXVARIABLESOLAR = 1200
+CAPEXFIXEDSOLAR = 10000.0
+buying_price = 0.2
+selling_price = 0.05
+PMAXINJECTEDGRID = 10
+PMAXEXTRACTEDGRID = 10
+CDISCHARGEMAXBAT = 1
+CCHARGEMAXBAT = 1
+Rated power of installation = 0.0 kWp
+activated binary PV variables: 
+optimized battery capacity: 0.0
+total cost: 9.6160 CHF
+total cost if we only bought from the grid: 9.616000000000001
+time to solve LP = 0.05601215362548828

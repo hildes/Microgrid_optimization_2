@@ -1,0 +1,53 @@
+Academic license - for non-commercial use only
+Optimize a model with 30075 rows, 160051 columns and 335123 nonzeros
+Variable types: 160025 continuous, 26 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 7e+02]
+  Objective range  [5e-02, 1e+02]
+  Bounds range     [6e-04, 1e+01]
+  RHS range        [0e+00, 0e+00]
+Found heuristic solution: objective 1144.7008000
+Presolve removed 7626 rows and 74101 columns
+Presolve time: 0.78s
+Presolved: 22449 rows, 85950 columns, 196181 nonzeros
+Variable types: 85924 continuous, 26 integer (26 binary)
+Deterministic concurrent LP optimizer: primal and dual simplex
+Showing first log only...
+
+Concurrent spin time: 0.15s
+
+Solved with dual simplex
+
+Root relaxation: objective 2.912683e+02, 12255 iterations, 1.04 seconds
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+     0     0  291.26826    0    9 1144.70080  291.26826  74.6%     -    2s
+H    0     0                     309.5249070  291.26826  5.90%     -    2s
+     0     0  291.36829    0   20  309.52491  291.36829  5.87%     -    3s
+H    0     0                     309.0862280  291.36829  5.73%     -    3s
+     0     0  291.44997    0   17  309.08623  291.44997  5.71%     -    5s
+     0     0  291.52620    0   10  309.08623  291.52620  5.68%     -   11s
+     0     0  291.54300    0    9  309.08623  291.54300  5.68%     -   15s
+     0     0  291.73624    0    9  309.08623  291.73624  5.61%     -   27s
+     0     0  292.36792    0    9  309.08623  292.36792  5.41%     -   37s
+     0     0  293.70449    0    9  309.08623  293.70449  4.98%     -   51s
+     0     0  296.26392    0    9  309.08623  296.26392  4.15%     -   65s
+     0     0  299.35336    0    8  309.08623  299.35336  3.15%     -   78s
+     0     0  302.08054    0    5  309.08623  302.08054  2.27%     -   91s
+     0     0  304.95507    0    2  309.08623  304.95507  1.34%     -  135s
+     0     0  305.86675    0    2  309.08623  305.86675  1.04%     -  138s
+     0     0  305.97578    0    1  309.08623  305.97578  1.01%     -  139s
+     0     0  305.98567    0    1  309.08623  305.98567  1.00%     -  139s
+*    0     0               0     305.9858193  305.98582  0.00%     -  139s
+Cutting planes:
+  Implied bound: 26777
+  MIR: 3
+  Flow cover: 143
+Explored 1 nodes (186731 simplex iterations) in 139.68 seconds
+Thread count was 4 (of 4 available processors)
+
+Solution count 4: 305.986 309.086 309.525 1144.7 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 3.059858192708e+02, best bound 3.059858192708e+02, gap 0.0000%
+Gurobi status= 2

@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <graph edgedefault="directed">
+    <node id="supersource" />
+    <node id="supersink" />
+    <node id="Battery0" />
+    <node id="PV0" />
+    <node id="Consumption0" />
+    <node id="Battery1" />
+    <node id="PV1" />
+    <node id="Consumption1" />
+    <node id="Battery2" />
+    <node id="PV2" />
+    <node id="Consumption2" />
+    <edge source="supersource" target="PV0" />
+    <edge source="supersource" target="Consumption1" />
+    <edge source="supersource" target="PV1" />
+    <edge source="supersource" target="Consumption2" />
+    <edge source="supersource" target="PV2" />
+    <edge source="Battery0" target="Consumption1" />
+    <edge source="Battery0" target="Battery1" />
+    <edge source="PV0" target="supersink" />
+    <edge source="PV0" target="Consumption1" />
+    <edge source="PV0" target="Battery1" />
+    <edge source="Battery1" target="Consumption2" />
+    <edge source="Battery1" target="Battery2" />
+    <edge source="PV1" target="supersink" />
+    <edge source="PV1" target="Consumption2" />
+    <edge source="PV1" target="Battery2" />
+    <edge source="Consumption1" target="supersink" />
+    <edge source="PV2" target="supersink" />
+    <edge source="Consumption2" target="supersink" />
+  </graph>
+</graphml>

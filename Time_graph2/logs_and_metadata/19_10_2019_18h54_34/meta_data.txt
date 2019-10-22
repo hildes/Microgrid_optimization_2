@@ -1,0 +1,18 @@
+Information concerning this particular LP
+hours considered: [0,167], including 167
+Constants:
+CAPMINBAT = 0.0
+CAPMAXBAT = 10.0
+CAPEXVARIABLEBAT = 4
+PRATEDMINSOLAR = 0
+PRATEDMAXSOLAR = 25
+CAPEXVARIABLESOLAR = 1
+CAPEXFIXEDSOLAR = 1
+buying_price = 0.9
+selling_price = 0.1
+PMAXINJECTEDGRID = 10
+PMAXEXTRACTEDGRID = 10
+CDISCHARGEMAXBAT = 1
+CCHARGEMAXBAT = 1
+Rated power of installation = 25.0 kWp
+activated binary PV variables: ('supersupersourcePV', 'supersourcePV0'),('supersupersourcePV', 'supersourcePV1'),('supersupersourcePV', 'supersourcePV2'),('supersupersourcePV', 'supersourcePV3'),('supersupersourcePV', 'supersourcePV4'),('supersupersourcePV', 'supersourcePV5'),('supersupersourcePV', 'supersourcePV6'),('supersupersourcePV', 'supersourcePV7'),('supersupersourcePV', 'supersourcePV8'),('supersupersourcePV', 'supersourcePV9'),('supersupersourcePV', 'supersourcePV10'),('supersupersourcePV', 'supersourcePV11'),('supersupersourcePV', 'supersourcePV12'),('supersupersourcePV', 'supersourcePV13'),('supersupersourcePV', 'supersourcePV14'),('supersupersourcePV', 'supersourcePV15'),('supersupersourcePV', 'supersourcePV16'),('supersupersourcePV', 'supersourcePV17'),('supersupersourcePV', 'supersourcePV18'),('supersupersourcePV', 'supersourcePV19'),('supersupersourcePV', 'supersourcePV20'),('supersupersourcePV', 'supersourcePV21'),('supersupersourcePV', 'supersourcePV22'),('supersupersourcePV', 'supersourcePV23'),('supersupersourcePV', 'supersourcePV24'),

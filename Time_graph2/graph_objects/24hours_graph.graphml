@@ -1,0 +1,873 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><graph edgedefault="directed"><node id="supersource"/>
+<node id="supersupersourcePV"/>
+<node id="supersink"/>
+<node id="Battery0"/>
+<node id="Consumption0"/>
+<node id="supersourcePV0"/>
+<node id="supersourcePV1"/>
+<node id="supersourcePV2"/>
+<node id="supersourcePV3"/>
+<node id="supersourcePV4"/>
+<node id="supersourcePV5"/>
+<node id="PV0,0"/>
+<node id="PV1,0"/>
+<node id="PV2,0"/>
+<node id="PV3,0"/>
+<node id="PV4,0"/>
+<node id="PV5,0"/>
+<node id="Battery1"/>
+<node id="Consumption1"/>
+<node id="PV0,1"/>
+<node id="PV1,1"/>
+<node id="PV2,1"/>
+<node id="PV3,1"/>
+<node id="PV4,1"/>
+<node id="PV5,1"/>
+<node id="Battery2"/>
+<node id="Consumption2"/>
+<node id="PV0,2"/>
+<node id="PV1,2"/>
+<node id="PV2,2"/>
+<node id="PV3,2"/>
+<node id="PV4,2"/>
+<node id="PV5,2"/>
+<node id="Battery3"/>
+<node id="Consumption3"/>
+<node id="PV0,3"/>
+<node id="PV1,3"/>
+<node id="PV2,3"/>
+<node id="PV3,3"/>
+<node id="PV4,3"/>
+<node id="PV5,3"/>
+<node id="Battery4"/>
+<node id="Consumption4"/>
+<node id="PV0,4"/>
+<node id="PV1,4"/>
+<node id="PV2,4"/>
+<node id="PV3,4"/>
+<node id="PV4,4"/>
+<node id="PV5,4"/>
+<node id="Battery5"/>
+<node id="Consumption5"/>
+<node id="PV0,5"/>
+<node id="PV1,5"/>
+<node id="PV2,5"/>
+<node id="PV3,5"/>
+<node id="PV4,5"/>
+<node id="PV5,5"/>
+<node id="Battery6"/>
+<node id="Consumption6"/>
+<node id="PV0,6"/>
+<node id="PV1,6"/>
+<node id="PV2,6"/>
+<node id="PV3,6"/>
+<node id="PV4,6"/>
+<node id="PV5,6"/>
+<node id="Battery7"/>
+<node id="Consumption7"/>
+<node id="PV0,7"/>
+<node id="PV1,7"/>
+<node id="PV2,7"/>
+<node id="PV3,7"/>
+<node id="PV4,7"/>
+<node id="PV5,7"/>
+<node id="Battery8"/>
+<node id="Consumption8"/>
+<node id="PV0,8"/>
+<node id="PV1,8"/>
+<node id="PV2,8"/>
+<node id="PV3,8"/>
+<node id="PV4,8"/>
+<node id="PV5,8"/>
+<node id="Battery9"/>
+<node id="Consumption9"/>
+<node id="PV0,9"/>
+<node id="PV1,9"/>
+<node id="PV2,9"/>
+<node id="PV3,9"/>
+<node id="PV4,9"/>
+<node id="PV5,9"/>
+<node id="Battery10"/>
+<node id="Consumption10"/>
+<node id="PV0,10"/>
+<node id="PV1,10"/>
+<node id="PV2,10"/>
+<node id="PV3,10"/>
+<node id="PV4,10"/>
+<node id="PV5,10"/>
+<node id="Battery11"/>
+<node id="Consumption11"/>
+<node id="PV0,11"/>
+<node id="PV1,11"/>
+<node id="PV2,11"/>
+<node id="PV3,11"/>
+<node id="PV4,11"/>
+<node id="PV5,11"/>
+<node id="Battery12"/>
+<node id="Consumption12"/>
+<node id="PV0,12"/>
+<node id="PV1,12"/>
+<node id="PV2,12"/>
+<node id="PV3,12"/>
+<node id="PV4,12"/>
+<node id="PV5,12"/>
+<node id="Battery13"/>
+<node id="Consumption13"/>
+<node id="PV0,13"/>
+<node id="PV1,13"/>
+<node id="PV2,13"/>
+<node id="PV3,13"/>
+<node id="PV4,13"/>
+<node id="PV5,13"/>
+<node id="Battery14"/>
+<node id="Consumption14"/>
+<node id="PV0,14"/>
+<node id="PV1,14"/>
+<node id="PV2,14"/>
+<node id="PV3,14"/>
+<node id="PV4,14"/>
+<node id="PV5,14"/>
+<node id="Battery15"/>
+<node id="Consumption15"/>
+<node id="PV0,15"/>
+<node id="PV1,15"/>
+<node id="PV2,15"/>
+<node id="PV3,15"/>
+<node id="PV4,15"/>
+<node id="PV5,15"/>
+<node id="Battery16"/>
+<node id="Consumption16"/>
+<node id="PV0,16"/>
+<node id="PV1,16"/>
+<node id="PV2,16"/>
+<node id="PV3,16"/>
+<node id="PV4,16"/>
+<node id="PV5,16"/>
+<node id="Battery17"/>
+<node id="Consumption17"/>
+<node id="PV0,17"/>
+<node id="PV1,17"/>
+<node id="PV2,17"/>
+<node id="PV3,17"/>
+<node id="PV4,17"/>
+<node id="PV5,17"/>
+<node id="Battery18"/>
+<node id="Consumption18"/>
+<node id="PV0,18"/>
+<node id="PV1,18"/>
+<node id="PV2,18"/>
+<node id="PV3,18"/>
+<node id="PV4,18"/>
+<node id="PV5,18"/>
+<node id="Battery19"/>
+<node id="Consumption19"/>
+<node id="PV0,19"/>
+<node id="PV1,19"/>
+<node id="PV2,19"/>
+<node id="PV3,19"/>
+<node id="PV4,19"/>
+<node id="PV5,19"/>
+<node id="Battery20"/>
+<node id="Consumption20"/>
+<node id="PV0,20"/>
+<node id="PV1,20"/>
+<node id="PV2,20"/>
+<node id="PV3,20"/>
+<node id="PV4,20"/>
+<node id="PV5,20"/>
+<node id="Battery21"/>
+<node id="Consumption21"/>
+<node id="PV0,21"/>
+<node id="PV1,21"/>
+<node id="PV2,21"/>
+<node id="PV3,21"/>
+<node id="PV4,21"/>
+<node id="PV5,21"/>
+<node id="Battery22"/>
+<node id="Consumption22"/>
+<node id="PV0,22"/>
+<node id="PV1,22"/>
+<node id="PV2,22"/>
+<node id="PV3,22"/>
+<node id="PV4,22"/>
+<node id="PV5,22"/>
+<node id="Battery23"/>
+<node id="Consumption23"/>
+<node id="PV0,23"/>
+<node id="PV1,23"/>
+<node id="PV2,23"/>
+<node id="PV3,23"/>
+<node id="PV4,23"/>
+<node id="PV5,23"/>
+<node id="Battery24"/>
+<edge source="supersource" target="Consumption1"/>
+<edge source="supersource" target="Consumption2"/>
+<edge source="supersource" target="Consumption3"/>
+<edge source="supersource" target="Consumption4"/>
+<edge source="supersource" target="Consumption5"/>
+<edge source="supersource" target="Consumption6"/>
+<edge source="supersource" target="Consumption7"/>
+<edge source="supersource" target="Consumption8"/>
+<edge source="supersource" target="Consumption9"/>
+<edge source="supersource" target="Consumption10"/>
+<edge source="supersource" target="Consumption11"/>
+<edge source="supersource" target="Consumption12"/>
+<edge source="supersource" target="Consumption13"/>
+<edge source="supersource" target="Consumption14"/>
+<edge source="supersource" target="Consumption15"/>
+<edge source="supersource" target="Consumption16"/>
+<edge source="supersource" target="Consumption17"/>
+<edge source="supersource" target="Consumption18"/>
+<edge source="supersource" target="Consumption19"/>
+<edge source="supersource" target="Consumption20"/>
+<edge source="supersource" target="Consumption21"/>
+<edge source="supersource" target="Consumption22"/>
+<edge source="supersource" target="Consumption23"/>
+<edge source="supersupersourcePV" target="supersourcePV0"/>
+<edge source="supersupersourcePV" target="supersourcePV1"/>
+<edge source="supersupersourcePV" target="supersourcePV2"/>
+<edge source="supersupersourcePV" target="supersourcePV3"/>
+<edge source="supersupersourcePV" target="supersourcePV4"/>
+<edge source="supersupersourcePV" target="supersourcePV5"/>
+<edge source="Battery0" target="Battery1"/>
+<edge source="Battery0" target="Consumption1"/>
+<edge source="Consumption0" target="supersink"/>
+<edge source="supersourcePV0" target="PV0,0"/>
+<edge source="supersourcePV0" target="PV0,1"/>
+<edge source="supersourcePV0" target="PV0,2"/>
+<edge source="supersourcePV0" target="PV0,3"/>
+<edge source="supersourcePV0" target="PV0,4"/>
+<edge source="supersourcePV0" target="PV0,5"/>
+<edge source="supersourcePV0" target="PV0,6"/>
+<edge source="supersourcePV0" target="PV0,7"/>
+<edge source="supersourcePV0" target="PV0,8"/>
+<edge source="supersourcePV0" target="PV0,9"/>
+<edge source="supersourcePV0" target="PV0,10"/>
+<edge source="supersourcePV0" target="PV0,11"/>
+<edge source="supersourcePV0" target="PV0,12"/>
+<edge source="supersourcePV0" target="PV0,13"/>
+<edge source="supersourcePV0" target="PV0,14"/>
+<edge source="supersourcePV0" target="PV0,15"/>
+<edge source="supersourcePV0" target="PV0,16"/>
+<edge source="supersourcePV0" target="PV0,17"/>
+<edge source="supersourcePV0" target="PV0,18"/>
+<edge source="supersourcePV0" target="PV0,19"/>
+<edge source="supersourcePV0" target="PV0,20"/>
+<edge source="supersourcePV0" target="PV0,21"/>
+<edge source="supersourcePV0" target="PV0,22"/>
+<edge source="supersourcePV0" target="PV0,23"/>
+<edge source="supersourcePV1" target="PV1,0"/>
+<edge source="supersourcePV1" target="PV1,1"/>
+<edge source="supersourcePV1" target="PV1,2"/>
+<edge source="supersourcePV1" target="PV1,3"/>
+<edge source="supersourcePV1" target="PV1,4"/>
+<edge source="supersourcePV1" target="PV1,5"/>
+<edge source="supersourcePV1" target="PV1,6"/>
+<edge source="supersourcePV1" target="PV1,7"/>
+<edge source="supersourcePV1" target="PV1,8"/>
+<edge source="supersourcePV1" target="PV1,9"/>
+<edge source="supersourcePV1" target="PV1,10"/>
+<edge source="supersourcePV1" target="PV1,11"/>
+<edge source="supersourcePV1" target="PV1,12"/>
+<edge source="supersourcePV1" target="PV1,13"/>
+<edge source="supersourcePV1" target="PV1,14"/>
+<edge source="supersourcePV1" target="PV1,15"/>
+<edge source="supersourcePV1" target="PV1,16"/>
+<edge source="supersourcePV1" target="PV1,17"/>
+<edge source="supersourcePV1" target="PV1,18"/>
+<edge source="supersourcePV1" target="PV1,19"/>
+<edge source="supersourcePV1" target="PV1,20"/>
+<edge source="supersourcePV1" target="PV1,21"/>
+<edge source="supersourcePV1" target="PV1,22"/>
+<edge source="supersourcePV1" target="PV1,23"/>
+<edge source="supersourcePV2" target="PV2,0"/>
+<edge source="supersourcePV2" target="PV2,1"/>
+<edge source="supersourcePV2" target="PV2,2"/>
+<edge source="supersourcePV2" target="PV2,3"/>
+<edge source="supersourcePV2" target="PV2,4"/>
+<edge source="supersourcePV2" target="PV2,5"/>
+<edge source="supersourcePV2" target="PV2,6"/>
+<edge source="supersourcePV2" target="PV2,7"/>
+<edge source="supersourcePV2" target="PV2,8"/>
+<edge source="supersourcePV2" target="PV2,9"/>
+<edge source="supersourcePV2" target="PV2,10"/>
+<edge source="supersourcePV2" target="PV2,11"/>
+<edge source="supersourcePV2" target="PV2,12"/>
+<edge source="supersourcePV2" target="PV2,13"/>
+<edge source="supersourcePV2" target="PV2,14"/>
+<edge source="supersourcePV2" target="PV2,15"/>
+<edge source="supersourcePV2" target="PV2,16"/>
+<edge source="supersourcePV2" target="PV2,17"/>
+<edge source="supersourcePV2" target="PV2,18"/>
+<edge source="supersourcePV2" target="PV2,19"/>
+<edge source="supersourcePV2" target="PV2,20"/>
+<edge source="supersourcePV2" target="PV2,21"/>
+<edge source="supersourcePV2" target="PV2,22"/>
+<edge source="supersourcePV2" target="PV2,23"/>
+<edge source="supersourcePV3" target="PV3,0"/>
+<edge source="supersourcePV3" target="PV3,1"/>
+<edge source="supersourcePV3" target="PV3,2"/>
+<edge source="supersourcePV3" target="PV3,3"/>
+<edge source="supersourcePV3" target="PV3,4"/>
+<edge source="supersourcePV3" target="PV3,5"/>
+<edge source="supersourcePV3" target="PV3,6"/>
+<edge source="supersourcePV3" target="PV3,7"/>
+<edge source="supersourcePV3" target="PV3,8"/>
+<edge source="supersourcePV3" target="PV3,9"/>
+<edge source="supersourcePV3" target="PV3,10"/>
+<edge source="supersourcePV3" target="PV3,11"/>
+<edge source="supersourcePV3" target="PV3,12"/>
+<edge source="supersourcePV3" target="PV3,13"/>
+<edge source="supersourcePV3" target="PV3,14"/>
+<edge source="supersourcePV3" target="PV3,15"/>
+<edge source="supersourcePV3" target="PV3,16"/>
+<edge source="supersourcePV3" target="PV3,17"/>
+<edge source="supersourcePV3" target="PV3,18"/>
+<edge source="supersourcePV3" target="PV3,19"/>
+<edge source="supersourcePV3" target="PV3,20"/>
+<edge source="supersourcePV3" target="PV3,21"/>
+<edge source="supersourcePV3" target="PV3,22"/>
+<edge source="supersourcePV3" target="PV3,23"/>
+<edge source="supersourcePV4" target="PV4,0"/>
+<edge source="supersourcePV4" target="PV4,1"/>
+<edge source="supersourcePV4" target="PV4,2"/>
+<edge source="supersourcePV4" target="PV4,3"/>
+<edge source="supersourcePV4" target="PV4,4"/>
+<edge source="supersourcePV4" target="PV4,5"/>
+<edge source="supersourcePV4" target="PV4,6"/>
+<edge source="supersourcePV4" target="PV4,7"/>
+<edge source="supersourcePV4" target="PV4,8"/>
+<edge source="supersourcePV4" target="PV4,9"/>
+<edge source="supersourcePV4" target="PV4,10"/>
+<edge source="supersourcePV4" target="PV4,11"/>
+<edge source="supersourcePV4" target="PV4,12"/>
+<edge source="supersourcePV4" target="PV4,13"/>
+<edge source="supersourcePV4" target="PV4,14"/>
+<edge source="supersourcePV4" target="PV4,15"/>
+<edge source="supersourcePV4" target="PV4,16"/>
+<edge source="supersourcePV4" target="PV4,17"/>
+<edge source="supersourcePV4" target="PV4,18"/>
+<edge source="supersourcePV4" target="PV4,19"/>
+<edge source="supersourcePV4" target="PV4,20"/>
+<edge source="supersourcePV4" target="PV4,21"/>
+<edge source="supersourcePV4" target="PV4,22"/>
+<edge source="supersourcePV4" target="PV4,23"/>
+<edge source="supersourcePV5" target="PV5,0"/>
+<edge source="supersourcePV5" target="PV5,1"/>
+<edge source="supersourcePV5" target="PV5,2"/>
+<edge source="supersourcePV5" target="PV5,3"/>
+<edge source="supersourcePV5" target="PV5,4"/>
+<edge source="supersourcePV5" target="PV5,5"/>
+<edge source="supersourcePV5" target="PV5,6"/>
+<edge source="supersourcePV5" target="PV5,7"/>
+<edge source="supersourcePV5" target="PV5,8"/>
+<edge source="supersourcePV5" target="PV5,9"/>
+<edge source="supersourcePV5" target="PV5,10"/>
+<edge source="supersourcePV5" target="PV5,11"/>
+<edge source="supersourcePV5" target="PV5,12"/>
+<edge source="supersourcePV5" target="PV5,13"/>
+<edge source="supersourcePV5" target="PV5,14"/>
+<edge source="supersourcePV5" target="PV5,15"/>
+<edge source="supersourcePV5" target="PV5,16"/>
+<edge source="supersourcePV5" target="PV5,17"/>
+<edge source="supersourcePV5" target="PV5,18"/>
+<edge source="supersourcePV5" target="PV5,19"/>
+<edge source="supersourcePV5" target="PV5,20"/>
+<edge source="supersourcePV5" target="PV5,21"/>
+<edge source="supersourcePV5" target="PV5,22"/>
+<edge source="supersourcePV5" target="PV5,23"/>
+<edge source="PV0,0" target="supersink"/>
+<edge source="PV0,0" target="Consumption1"/>
+<edge source="PV0,0" target="Battery1"/>
+<edge source="PV1,0" target="supersink"/>
+<edge source="PV1,0" target="Consumption1"/>
+<edge source="PV1,0" target="Battery1"/>
+<edge source="PV2,0" target="supersink"/>
+<edge source="PV2,0" target="Consumption1"/>
+<edge source="PV2,0" target="Battery1"/>
+<edge source="PV3,0" target="supersink"/>
+<edge source="PV3,0" target="Consumption1"/>
+<edge source="PV3,0" target="Battery1"/>
+<edge source="PV4,0" target="supersink"/>
+<edge source="PV4,0" target="Consumption1"/>
+<edge source="PV4,0" target="Battery1"/>
+<edge source="PV5,0" target="supersink"/>
+<edge source="PV5,0" target="Consumption1"/>
+<edge source="PV5,0" target="Battery1"/>
+<edge source="Battery1" target="Battery2"/>
+<edge source="Battery1" target="Consumption2"/>
+<edge source="Consumption1" target="supersink"/>
+<edge source="PV0,1" target="supersink"/>
+<edge source="PV0,1" target="Consumption2"/>
+<edge source="PV0,1" target="Battery2"/>
+<edge source="PV1,1" target="supersink"/>
+<edge source="PV1,1" target="Consumption2"/>
+<edge source="PV1,1" target="Battery2"/>
+<edge source="PV2,1" target="supersink"/>
+<edge source="PV2,1" target="Consumption2"/>
+<edge source="PV2,1" target="Battery2"/>
+<edge source="PV3,1" target="supersink"/>
+<edge source="PV3,1" target="Consumption2"/>
+<edge source="PV3,1" target="Battery2"/>
+<edge source="PV4,1" target="supersink"/>
+<edge source="PV4,1" target="Consumption2"/>
+<edge source="PV4,1" target="Battery2"/>
+<edge source="PV5,1" target="supersink"/>
+<edge source="PV5,1" target="Consumption2"/>
+<edge source="PV5,1" target="Battery2"/>
+<edge source="Battery2" target="Battery3"/>
+<edge source="Battery2" target="Consumption3"/>
+<edge source="Consumption2" target="supersink"/>
+<edge source="PV0,2" target="supersink"/>
+<edge source="PV0,2" target="Consumption3"/>
+<edge source="PV0,2" target="Battery3"/>
+<edge source="PV1,2" target="supersink"/>
+<edge source="PV1,2" target="Consumption3"/>
+<edge source="PV1,2" target="Battery3"/>
+<edge source="PV2,2" target="supersink"/>
+<edge source="PV2,2" target="Consumption3"/>
+<edge source="PV2,2" target="Battery3"/>
+<edge source="PV3,2" target="supersink"/>
+<edge source="PV3,2" target="Consumption3"/>
+<edge source="PV3,2" target="Battery3"/>
+<edge source="PV4,2" target="supersink"/>
+<edge source="PV4,2" target="Consumption3"/>
+<edge source="PV4,2" target="Battery3"/>
+<edge source="PV5,2" target="supersink"/>
+<edge source="PV5,2" target="Consumption3"/>
+<edge source="PV5,2" target="Battery3"/>
+<edge source="Battery3" target="Battery4"/>
+<edge source="Battery3" target="Consumption4"/>
+<edge source="Consumption3" target="supersink"/>
+<edge source="PV0,3" target="supersink"/>
+<edge source="PV0,3" target="Consumption4"/>
+<edge source="PV0,3" target="Battery4"/>
+<edge source="PV1,3" target="supersink"/>
+<edge source="PV1,3" target="Consumption4"/>
+<edge source="PV1,3" target="Battery4"/>
+<edge source="PV2,3" target="supersink"/>
+<edge source="PV2,3" target="Consumption4"/>
+<edge source="PV2,3" target="Battery4"/>
+<edge source="PV3,3" target="supersink"/>
+<edge source="PV3,3" target="Consumption4"/>
+<edge source="PV3,3" target="Battery4"/>
+<edge source="PV4,3" target="supersink"/>
+<edge source="PV4,3" target="Consumption4"/>
+<edge source="PV4,3" target="Battery4"/>
+<edge source="PV5,3" target="supersink"/>
+<edge source="PV5,3" target="Consumption4"/>
+<edge source="PV5,3" target="Battery4"/>
+<edge source="Battery4" target="Battery5"/>
+<edge source="Battery4" target="Consumption5"/>
+<edge source="Consumption4" target="supersink"/>
+<edge source="PV0,4" target="supersink"/>
+<edge source="PV0,4" target="Consumption5"/>
+<edge source="PV0,4" target="Battery5"/>
+<edge source="PV1,4" target="supersink"/>
+<edge source="PV1,4" target="Consumption5"/>
+<edge source="PV1,4" target="Battery5"/>
+<edge source="PV2,4" target="supersink"/>
+<edge source="PV2,4" target="Consumption5"/>
+<edge source="PV2,4" target="Battery5"/>
+<edge source="PV3,4" target="supersink"/>
+<edge source="PV3,4" target="Consumption5"/>
+<edge source="PV3,4" target="Battery5"/>
+<edge source="PV4,4" target="supersink"/>
+<edge source="PV4,4" target="Consumption5"/>
+<edge source="PV4,4" target="Battery5"/>
+<edge source="PV5,4" target="supersink"/>
+<edge source="PV5,4" target="Consumption5"/>
+<edge source="PV5,4" target="Battery5"/>
+<edge source="Battery5" target="Battery6"/>
+<edge source="Battery5" target="Consumption6"/>
+<edge source="Consumption5" target="supersink"/>
+<edge source="PV0,5" target="supersink"/>
+<edge source="PV0,5" target="Consumption6"/>
+<edge source="PV0,5" target="Battery6"/>
+<edge source="PV1,5" target="supersink"/>
+<edge source="PV1,5" target="Consumption6"/>
+<edge source="PV1,5" target="Battery6"/>
+<edge source="PV2,5" target="supersink"/>
+<edge source="PV2,5" target="Consumption6"/>
+<edge source="PV2,5" target="Battery6"/>
+<edge source="PV3,5" target="supersink"/>
+<edge source="PV3,5" target="Consumption6"/>
+<edge source="PV3,5" target="Battery6"/>
+<edge source="PV4,5" target="supersink"/>
+<edge source="PV4,5" target="Consumption6"/>
+<edge source="PV4,5" target="Battery6"/>
+<edge source="PV5,5" target="supersink"/>
+<edge source="PV5,5" target="Consumption6"/>
+<edge source="PV5,5" target="Battery6"/>
+<edge source="Battery6" target="Battery7"/>
+<edge source="Battery6" target="Consumption7"/>
+<edge source="Consumption6" target="supersink"/>
+<edge source="PV0,6" target="supersink"/>
+<edge source="PV0,6" target="Consumption7"/>
+<edge source="PV0,6" target="Battery7"/>
+<edge source="PV1,6" target="supersink"/>
+<edge source="PV1,6" target="Consumption7"/>
+<edge source="PV1,6" target="Battery7"/>
+<edge source="PV2,6" target="supersink"/>
+<edge source="PV2,6" target="Consumption7"/>
+<edge source="PV2,6" target="Battery7"/>
+<edge source="PV3,6" target="supersink"/>
+<edge source="PV3,6" target="Consumption7"/>
+<edge source="PV3,6" target="Battery7"/>
+<edge source="PV4,6" target="supersink"/>
+<edge source="PV4,6" target="Consumption7"/>
+<edge source="PV4,6" target="Battery7"/>
+<edge source="PV5,6" target="supersink"/>
+<edge source="PV5,6" target="Consumption7"/>
+<edge source="PV5,6" target="Battery7"/>
+<edge source="Battery7" target="Battery8"/>
+<edge source="Battery7" target="Consumption8"/>
+<edge source="Consumption7" target="supersink"/>
+<edge source="PV0,7" target="supersink"/>
+<edge source="PV0,7" target="Consumption8"/>
+<edge source="PV0,7" target="Battery8"/>
+<edge source="PV1,7" target="supersink"/>
+<edge source="PV1,7" target="Consumption8"/>
+<edge source="PV1,7" target="Battery8"/>
+<edge source="PV2,7" target="supersink"/>
+<edge source="PV2,7" target="Consumption8"/>
+<edge source="PV2,7" target="Battery8"/>
+<edge source="PV3,7" target="supersink"/>
+<edge source="PV3,7" target="Consumption8"/>
+<edge source="PV3,7" target="Battery8"/>
+<edge source="PV4,7" target="supersink"/>
+<edge source="PV4,7" target="Consumption8"/>
+<edge source="PV4,7" target="Battery8"/>
+<edge source="PV5,7" target="supersink"/>
+<edge source="PV5,7" target="Consumption8"/>
+<edge source="PV5,7" target="Battery8"/>
+<edge source="Battery8" target="Battery9"/>
+<edge source="Battery8" target="Consumption9"/>
+<edge source="Consumption8" target="supersink"/>
+<edge source="PV0,8" target="supersink"/>
+<edge source="PV0,8" target="Consumption9"/>
+<edge source="PV0,8" target="Battery9"/>
+<edge source="PV1,8" target="supersink"/>
+<edge source="PV1,8" target="Consumption9"/>
+<edge source="PV1,8" target="Battery9"/>
+<edge source="PV2,8" target="supersink"/>
+<edge source="PV2,8" target="Consumption9"/>
+<edge source="PV2,8" target="Battery9"/>
+<edge source="PV3,8" target="supersink"/>
+<edge source="PV3,8" target="Consumption9"/>
+<edge source="PV3,8" target="Battery9"/>
+<edge source="PV4,8" target="supersink"/>
+<edge source="PV4,8" target="Consumption9"/>
+<edge source="PV4,8" target="Battery9"/>
+<edge source="PV5,8" target="supersink"/>
+<edge source="PV5,8" target="Consumption9"/>
+<edge source="PV5,8" target="Battery9"/>
+<edge source="Battery9" target="Battery10"/>
+<edge source="Battery9" target="Consumption10"/>
+<edge source="Consumption9" target="supersink"/>
+<edge source="PV0,9" target="supersink"/>
+<edge source="PV0,9" target="Consumption10"/>
+<edge source="PV0,9" target="Battery10"/>
+<edge source="PV1,9" target="supersink"/>
+<edge source="PV1,9" target="Consumption10"/>
+<edge source="PV1,9" target="Battery10"/>
+<edge source="PV2,9" target="supersink"/>
+<edge source="PV2,9" target="Consumption10"/>
+<edge source="PV2,9" target="Battery10"/>
+<edge source="PV3,9" target="supersink"/>
+<edge source="PV3,9" target="Consumption10"/>
+<edge source="PV3,9" target="Battery10"/>
+<edge source="PV4,9" target="supersink"/>
+<edge source="PV4,9" target="Consumption10"/>
+<edge source="PV4,9" target="Battery10"/>
+<edge source="PV5,9" target="supersink"/>
+<edge source="PV5,9" target="Consumption10"/>
+<edge source="PV5,9" target="Battery10"/>
+<edge source="Battery10" target="Battery11"/>
+<edge source="Battery10" target="Consumption11"/>
+<edge source="Consumption10" target="supersink"/>
+<edge source="PV0,10" target="supersink"/>
+<edge source="PV0,10" target="Consumption11"/>
+<edge source="PV0,10" target="Battery11"/>
+<edge source="PV1,10" target="supersink"/>
+<edge source="PV1,10" target="Consumption11"/>
+<edge source="PV1,10" target="Battery11"/>
+<edge source="PV2,10" target="supersink"/>
+<edge source="PV2,10" target="Consumption11"/>
+<edge source="PV2,10" target="Battery11"/>
+<edge source="PV3,10" target="supersink"/>
+<edge source="PV3,10" target="Consumption11"/>
+<edge source="PV3,10" target="Battery11"/>
+<edge source="PV4,10" target="supersink"/>
+<edge source="PV4,10" target="Consumption11"/>
+<edge source="PV4,10" target="Battery11"/>
+<edge source="PV5,10" target="supersink"/>
+<edge source="PV5,10" target="Consumption11"/>
+<edge source="PV5,10" target="Battery11"/>
+<edge source="Battery11" target="Battery12"/>
+<edge source="Battery11" target="Consumption12"/>
+<edge source="Consumption11" target="supersink"/>
+<edge source="PV0,11" target="supersink"/>
+<edge source="PV0,11" target="Consumption12"/>
+<edge source="PV0,11" target="Battery12"/>
+<edge source="PV1,11" target="supersink"/>
+<edge source="PV1,11" target="Consumption12"/>
+<edge source="PV1,11" target="Battery12"/>
+<edge source="PV2,11" target="supersink"/>
+<edge source="PV2,11" target="Consumption12"/>
+<edge source="PV2,11" target="Battery12"/>
+<edge source="PV3,11" target="supersink"/>
+<edge source="PV3,11" target="Consumption12"/>
+<edge source="PV3,11" target="Battery12"/>
+<edge source="PV4,11" target="supersink"/>
+<edge source="PV4,11" target="Consumption12"/>
+<edge source="PV4,11" target="Battery12"/>
+<edge source="PV5,11" target="supersink"/>
+<edge source="PV5,11" target="Consumption12"/>
+<edge source="PV5,11" target="Battery12"/>
+<edge source="Battery12" target="Battery13"/>
+<edge source="Battery12" target="Consumption13"/>
+<edge source="Consumption12" target="supersink"/>
+<edge source="PV0,12" target="supersink"/>
+<edge source="PV0,12" target="Consumption13"/>
+<edge source="PV0,12" target="Battery13"/>
+<edge source="PV1,12" target="supersink"/>
+<edge source="PV1,12" target="Consumption13"/>
+<edge source="PV1,12" target="Battery13"/>
+<edge source="PV2,12" target="supersink"/>
+<edge source="PV2,12" target="Consumption13"/>
+<edge source="PV2,12" target="Battery13"/>
+<edge source="PV3,12" target="supersink"/>
+<edge source="PV3,12" target="Consumption13"/>
+<edge source="PV3,12" target="Battery13"/>
+<edge source="PV4,12" target="supersink"/>
+<edge source="PV4,12" target="Consumption13"/>
+<edge source="PV4,12" target="Battery13"/>
+<edge source="PV5,12" target="supersink"/>
+<edge source="PV5,12" target="Consumption13"/>
+<edge source="PV5,12" target="Battery13"/>
+<edge source="Battery13" target="Battery14"/>
+<edge source="Battery13" target="Consumption14"/>
+<edge source="Consumption13" target="supersink"/>
+<edge source="PV0,13" target="supersink"/>
+<edge source="PV0,13" target="Consumption14"/>
+<edge source="PV0,13" target="Battery14"/>
+<edge source="PV1,13" target="supersink"/>
+<edge source="PV1,13" target="Consumption14"/>
+<edge source="PV1,13" target="Battery14"/>
+<edge source="PV2,13" target="supersink"/>
+<edge source="PV2,13" target="Consumption14"/>
+<edge source="PV2,13" target="Battery14"/>
+<edge source="PV3,13" target="supersink"/>
+<edge source="PV3,13" target="Consumption14"/>
+<edge source="PV3,13" target="Battery14"/>
+<edge source="PV4,13" target="supersink"/>
+<edge source="PV4,13" target="Consumption14"/>
+<edge source="PV4,13" target="Battery14"/>
+<edge source="PV5,13" target="supersink"/>
+<edge source="PV5,13" target="Consumption14"/>
+<edge source="PV5,13" target="Battery14"/>
+<edge source="Battery14" target="Battery15"/>
+<edge source="Battery14" target="Consumption15"/>
+<edge source="Consumption14" target="supersink"/>
+<edge source="PV0,14" target="supersink"/>
+<edge source="PV0,14" target="Consumption15"/>
+<edge source="PV0,14" target="Battery15"/>
+<edge source="PV1,14" target="supersink"/>
+<edge source="PV1,14" target="Consumption15"/>
+<edge source="PV1,14" target="Battery15"/>
+<edge source="PV2,14" target="supersink"/>
+<edge source="PV2,14" target="Consumption15"/>
+<edge source="PV2,14" target="Battery15"/>
+<edge source="PV3,14" target="supersink"/>
+<edge source="PV3,14" target="Consumption15"/>
+<edge source="PV3,14" target="Battery15"/>
+<edge source="PV4,14" target="supersink"/>
+<edge source="PV4,14" target="Consumption15"/>
+<edge source="PV4,14" target="Battery15"/>
+<edge source="PV5,14" target="supersink"/>
+<edge source="PV5,14" target="Consumption15"/>
+<edge source="PV5,14" target="Battery15"/>
+<edge source="Battery15" target="Battery16"/>
+<edge source="Battery15" target="Consumption16"/>
+<edge source="Consumption15" target="supersink"/>
+<edge source="PV0,15" target="supersink"/>
+<edge source="PV0,15" target="Consumption16"/>
+<edge source="PV0,15" target="Battery16"/>
+<edge source="PV1,15" target="supersink"/>
+<edge source="PV1,15" target="Consumption16"/>
+<edge source="PV1,15" target="Battery16"/>
+<edge source="PV2,15" target="supersink"/>
+<edge source="PV2,15" target="Consumption16"/>
+<edge source="PV2,15" target="Battery16"/>
+<edge source="PV3,15" target="supersink"/>
+<edge source="PV3,15" target="Consumption16"/>
+<edge source="PV3,15" target="Battery16"/>
+<edge source="PV4,15" target="supersink"/>
+<edge source="PV4,15" target="Consumption16"/>
+<edge source="PV4,15" target="Battery16"/>
+<edge source="PV5,15" target="supersink"/>
+<edge source="PV5,15" target="Consumption16"/>
+<edge source="PV5,15" target="Battery16"/>
+<edge source="Battery16" target="Battery17"/>
+<edge source="Battery16" target="Consumption17"/>
+<edge source="Consumption16" target="supersink"/>
+<edge source="PV0,16" target="supersink"/>
+<edge source="PV0,16" target="Consumption17"/>
+<edge source="PV0,16" target="Battery17"/>
+<edge source="PV1,16" target="supersink"/>
+<edge source="PV1,16" target="Consumption17"/>
+<edge source="PV1,16" target="Battery17"/>
+<edge source="PV2,16" target="supersink"/>
+<edge source="PV2,16" target="Consumption17"/>
+<edge source="PV2,16" target="Battery17"/>
+<edge source="PV3,16" target="supersink"/>
+<edge source="PV3,16" target="Consumption17"/>
+<edge source="PV3,16" target="Battery17"/>
+<edge source="PV4,16" target="supersink"/>
+<edge source="PV4,16" target="Consumption17"/>
+<edge source="PV4,16" target="Battery17"/>
+<edge source="PV5,16" target="supersink"/>
+<edge source="PV5,16" target="Consumption17"/>
+<edge source="PV5,16" target="Battery17"/>
+<edge source="Battery17" target="Battery18"/>
+<edge source="Battery17" target="Consumption18"/>
+<edge source="Consumption17" target="supersink"/>
+<edge source="PV0,17" target="supersink"/>
+<edge source="PV0,17" target="Consumption18"/>
+<edge source="PV0,17" target="Battery18"/>
+<edge source="PV1,17" target="supersink"/>
+<edge source="PV1,17" target="Consumption18"/>
+<edge source="PV1,17" target="Battery18"/>
+<edge source="PV2,17" target="supersink"/>
+<edge source="PV2,17" target="Consumption18"/>
+<edge source="PV2,17" target="Battery18"/>
+<edge source="PV3,17" target="supersink"/>
+<edge source="PV3,17" target="Consumption18"/>
+<edge source="PV3,17" target="Battery18"/>
+<edge source="PV4,17" target="supersink"/>
+<edge source="PV4,17" target="Consumption18"/>
+<edge source="PV4,17" target="Battery18"/>
+<edge source="PV5,17" target="supersink"/>
+<edge source="PV5,17" target="Consumption18"/>
+<edge source="PV5,17" target="Battery18"/>
+<edge source="Battery18" target="Battery19"/>
+<edge source="Battery18" target="Consumption19"/>
+<edge source="Consumption18" target="supersink"/>
+<edge source="PV0,18" target="supersink"/>
+<edge source="PV0,18" target="Consumption19"/>
+<edge source="PV0,18" target="Battery19"/>
+<edge source="PV1,18" target="supersink"/>
+<edge source="PV1,18" target="Consumption19"/>
+<edge source="PV1,18" target="Battery19"/>
+<edge source="PV2,18" target="supersink"/>
+<edge source="PV2,18" target="Consumption19"/>
+<edge source="PV2,18" target="Battery19"/>
+<edge source="PV3,18" target="supersink"/>
+<edge source="PV3,18" target="Consumption19"/>
+<edge source="PV3,18" target="Battery19"/>
+<edge source="PV4,18" target="supersink"/>
+<edge source="PV4,18" target="Consumption19"/>
+<edge source="PV4,18" target="Battery19"/>
+<edge source="PV5,18" target="supersink"/>
+<edge source="PV5,18" target="Consumption19"/>
+<edge source="PV5,18" target="Battery19"/>
+<edge source="Battery19" target="Battery20"/>
+<edge source="Battery19" target="Consumption20"/>
+<edge source="Consumption19" target="supersink"/>
+<edge source="PV0,19" target="supersink"/>
+<edge source="PV0,19" target="Consumption20"/>
+<edge source="PV0,19" target="Battery20"/>
+<edge source="PV1,19" target="supersink"/>
+<edge source="PV1,19" target="Consumption20"/>
+<edge source="PV1,19" target="Battery20"/>
+<edge source="PV2,19" target="supersink"/>
+<edge source="PV2,19" target="Consumption20"/>
+<edge source="PV2,19" target="Battery20"/>
+<edge source="PV3,19" target="supersink"/>
+<edge source="PV3,19" target="Consumption20"/>
+<edge source="PV3,19" target="Battery20"/>
+<edge source="PV4,19" target="supersink"/>
+<edge source="PV4,19" target="Consumption20"/>
+<edge source="PV4,19" target="Battery20"/>
+<edge source="PV5,19" target="supersink"/>
+<edge source="PV5,19" target="Consumption20"/>
+<edge source="PV5,19" target="Battery20"/>
+<edge source="Battery20" target="Battery21"/>
+<edge source="Battery20" target="Consumption21"/>
+<edge source="Consumption20" target="supersink"/>
+<edge source="PV0,20" target="supersink"/>
+<edge source="PV0,20" target="Consumption21"/>
+<edge source="PV0,20" target="Battery21"/>
+<edge source="PV1,20" target="supersink"/>
+<edge source="PV1,20" target="Consumption21"/>
+<edge source="PV1,20" target="Battery21"/>
+<edge source="PV2,20" target="supersink"/>
+<edge source="PV2,20" target="Consumption21"/>
+<edge source="PV2,20" target="Battery21"/>
+<edge source="PV3,20" target="supersink"/>
+<edge source="PV3,20" target="Consumption21"/>
+<edge source="PV3,20" target="Battery21"/>
+<edge source="PV4,20" target="supersink"/>
+<edge source="PV4,20" target="Consumption21"/>
+<edge source="PV4,20" target="Battery21"/>
+<edge source="PV5,20" target="supersink"/>
+<edge source="PV5,20" target="Consumption21"/>
+<edge source="PV5,20" target="Battery21"/>
+<edge source="Battery21" target="Battery22"/>
+<edge source="Battery21" target="Consumption22"/>
+<edge source="Consumption21" target="supersink"/>
+<edge source="PV0,21" target="supersink"/>
+<edge source="PV0,21" target="Consumption22"/>
+<edge source="PV0,21" target="Battery22"/>
+<edge source="PV1,21" target="supersink"/>
+<edge source="PV1,21" target="Consumption22"/>
+<edge source="PV1,21" target="Battery22"/>
+<edge source="PV2,21" target="supersink"/>
+<edge source="PV2,21" target="Consumption22"/>
+<edge source="PV2,21" target="Battery22"/>
+<edge source="PV3,21" target="supersink"/>
+<edge source="PV3,21" target="Consumption22"/>
+<edge source="PV3,21" target="Battery22"/>
+<edge source="PV4,21" target="supersink"/>
+<edge source="PV4,21" target="Consumption22"/>
+<edge source="PV4,21" target="Battery22"/>
+<edge source="PV5,21" target="supersink"/>
+<edge source="PV5,21" target="Consumption22"/>
+<edge source="PV5,21" target="Battery22"/>
+<edge source="Battery22" target="Battery23"/>
+<edge source="Battery22" target="Consumption23"/>
+<edge source="Consumption22" target="supersink"/>
+<edge source="PV0,22" target="supersink"/>
+<edge source="PV0,22" target="Consumption23"/>
+<edge source="PV0,22" target="Battery23"/>
+<edge source="PV1,22" target="supersink"/>
+<edge source="PV1,22" target="Consumption23"/>
+<edge source="PV1,22" target="Battery23"/>
+<edge source="PV2,22" target="supersink"/>
+<edge source="PV2,22" target="Consumption23"/>
+<edge source="PV2,22" target="Battery23"/>
+<edge source="PV3,22" target="supersink"/>
+<edge source="PV3,22" target="Consumption23"/>
+<edge source="PV3,22" target="Battery23"/>
+<edge source="PV4,22" target="supersink"/>
+<edge source="PV4,22" target="Consumption23"/>
+<edge source="PV4,22" target="Battery23"/>
+<edge source="PV5,22" target="supersink"/>
+<edge source="PV5,22" target="Consumption23"/>
+<edge source="PV5,22" target="Battery23"/>
+<edge source="Consumption23" target="supersink"/>
+<edge source="PV0,23" target="supersink"/>
+<edge source="PV0,23" target="Battery24"/>
+<edge source="PV1,23" target="supersink"/>
+<edge source="PV1,23" target="Battery24"/>
+<edge source="PV2,23" target="supersink"/>
+<edge source="PV2,23" target="Battery24"/>
+<edge source="PV3,23" target="supersink"/>
+<edge source="PV3,23" target="Battery24"/>
+<edge source="PV4,23" target="supersink"/>
+<edge source="PV4,23" target="Battery24"/>
+<edge source="PV5,23" target="supersink"/>
+<edge source="PV5,23" target="Battery24"/>
+</graph></graphml>
