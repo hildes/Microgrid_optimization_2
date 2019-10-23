@@ -44,12 +44,16 @@ consumption_data, PV_data = import_planair_data() #in comment typical value from
 #value, unit
 constants = {'CAPMINBAT': [0.0, 'kWh'],#0
              'CAPMAXBAT': [10, 'kWh'],#10
-             'CAPEXVARIABLEBAT': [0.11, 'CHF/kWh'],#470
-             'CAPEXFIXEDBAT': [12, 'CHF'],#3700
+             'CAPEXVARIABLEBAT': [470, 'CHF/kWh'],#470
+             'CAPEXFIXEDBAT': [3700, 'CHF'],#3700
+             'OPEXVARIABLEBAT': [0, 'CHF/year/kWh'],#0
+             'OPEXFIXEDBAT': [0, 'CHF/year'],#0
              'PRATEDMINSOLAR': [0, 'kWp'],#0
              'PRATEDMAXSOLAR': [25, 'kWp'],#25
-             'CAPEXVARIABLESOLAR': [12, 'CHF/kWp'],#1200.0  # CHF/kWp
-             'CAPEXFIXEDSOLAR': [13, 'CHF'],#10000.0  # fixed investment costs in CHF
+             'CAPEXVARIABLESOLAR': [1200.0, 'CHF/kWp'],#1200.0  # CHF/kWp
+             'CAPEXFIXEDSOLAR': [10000.0, 'CHF'],#10000.0  # fixed investment costs in CHF
+             'OPEXVARIABLESOLAR': [25, 'CHF/year/kWh'],#25
+             'OPEXFIXEDSOLAR': [0, 'CHF/year'],#0
              'buying_price': [0.2,'CHF'],#0.2
              'selling_price': [0.05,'CHF'],#0.05
              'PMAXINJECTEDGRID': [10,'kW'],#10
@@ -63,14 +67,15 @@ CAPMINBAT = constants['CAPMINBAT'][0]
 CAPMAXBAT = constants['CAPMAXBAT'][0]
 CAPEXVARIABLEBAT = constants['CAPEXVARIABLEBAT'][0]
 CAPEXFIXEDBAT = constants['CAPEXFIXEDBAT'][0]
+OPEXVARIABLEBAT = constants['OPEXVARIABLEBAT'][0]
+OPEXFIXEDBAT = constants['OPEXFIXEDBAT'][0]
 start_hour=0
-end_hour=2000
+end_hour=8760
 hours_considered = range(start_hour, end_hour)
 PCONS = [consumption_data[i] for i in hours_considered]
 NUMBER_OF_HOURS = end_hour - start_hour#len(hours_considered)
 PCONS[0] = 0.0  # Otherwise the LP is infeasible !!
 PCONSMAX = max(PCONS)
-PRATEDSOLAR = 1  # decision variable, will take the value of the sum of PV activation variables
 # production curve for installation of 1kW rated power
 PNORMSOLAR = [PV_data[i] for i in hours_considered]
 PRATEDMINSOLAR = constants['PRATEDMINSOLAR'][0]
@@ -80,6 +85,8 @@ PGENSOLAR = np.array([PNORMSOLAR[i] for i in range(len(PNORMSOLAR))])
 
 CAPEXVARIABLESOLAR = constants['CAPEXVARIABLESOLAR'][0]
 CAPEXFIXEDSOLAR = constants['CAPEXFIXEDSOLAR'][0]
+OPEXVARIABLESOLAR = constants['OPEXVARIABLESOLAR'][0]
+OPEXFIXEDSOLAR = constants['OPEXFIXEDSOLAR'][0]
 buying_price = constants['buying_price'][0]
 selling_price = constants['selling_price'][0]
 CENERGYGRID = np.full(NUMBER_OF_HOURS, buying_price)
@@ -141,20 +148,20 @@ start_time_constraints = time.time()  # start counting
 
 
 flow_vars = LpVariable.dicts('flow', G.edges(), 0, None, cat='Continuous')
-prated_solar = LpVariable('rated power', PRATEDMINSOLAR, PRATEDMAXSOLAR, cat='Consinuous')
-CAPBAT = LpVariable('cap_bat', CAPMINBAT, CAPMAXBAT, cat='Continuous')
+prated_solar = LpVariable('rated power', PRATEDMINSOLAR, PRATEDMAXSOLAR, cat='Continuous')
+cap_bat = LpVariable('cap_bat', CAPMINBAT, CAPMAXBAT, cat='Continuous')
 non_zero_pv = LpVariable('non_zero_pv',0,1,cat='Binary')
-(fixed_mins, fixed_maxs) = splitDict(fixed_flow_bounds)
+non_zero_bat = LpVariable('non_zero_bat',0,1,cat='Binary')
+
 
 prob = LpProblem('Energy flow problem', LpMinimize)
 # Creates the objective function
 prob += lpSum([flow_vars[arc] * fixed_arc_flow_cost[arc] for arc in fixed_arc_flow_cost] +
-              [prated_solar * CAPEXVARIABLESOLAR] +
-               [CAPBAT * CAPEXVARIABLEBAT] +
-               [non_zero_pv * CAPEXFIXEDSOLAR])
+              [non_zero_pv * ((CAPEXFIXEDSOLAR)/(LIFETIMESOLAR) + OPEXFIXEDSOLAR) + prated_solar * (CAPEXVARIABLESOLAR / LIFETIMESOLAR + OPEXVARIABLESOLAR)] +
+              [non_zero_bat * ((CAPEXFIXEDBAT)/(LIFETIMEBAT) + OPEXFIXEDBAT) + cap_bat * (CAPEXVARIABLEBAT / LIFETIMEBAT + OPEXVARIABLEBAT)])
 
 # fixed investment costs if there is >0 kWp installed
-
+(fixed_mins, fixed_maxs) = splitDict(fixed_flow_bounds)
 for arc_key in fixed_flow_bounds:
     #prob += pulp.LpConstraint(flow_vars[arc_key], sense = pulp.LpConstraintLE,rhs = fixed_maxs[arc_key])
     #prob += pulp.LpConstraint(flow_vars[arc_key], sense = pulp.LpConstraintGE,rhs = fixed_mins[arc_key])
@@ -162,16 +169,17 @@ for arc_key in fixed_flow_bounds:
     #prob += fixed_mins[arc_key] <= flow_vars[arc_key]
     flow_vars[arc_key].bounds(fixed_mins[arc_key],fixed_maxs[arc_key])
 for e in bat_bat_edges:
-    prob += flow_vars[e] <= CAPBAT, 'battery capacity'+str(e[0])
+    prob += flow_vars[e] <= cap_bat, 'battery capacity'+str(e[0])
 for e in pv_bat_edges:
-    prob += flow_vars[e] <= CCHARGEMAXBAT * CAPBAT, 'charging rate'+str(e[0])
+    prob += flow_vars[e] <= CCHARGEMAXBAT * cap_bat, 'charging rate'+str(e[0])
 for e in bat_cons_edges:
-    prob += flow_vars[e] <= CDISCHARGEMAXBAT * CAPBAT, 'discharging rate'+str(e[0])
+    prob += flow_vars[e] <= CDISCHARGEMAXBAT * cap_bat, 'discharging rate'+str(e[0])
 
 total_sun_gen = sum(PNORMSOLAR)
 prob += flow_vars[supsupsrcPV_supsrcPV_edge] <= total_sun_gen * prated_solar
-prob += non_zero_pv * PRATEDMAXSOLAR >= prated_solar
+prob += prated_solar <= non_zero_pv * PRATEDMAXSOLAR
 #prob += non_zero_pv >= prated_solar * (1/PRATEDMAXSOLAR)
+prob += cap_bat <= non_zero_bat * CAPMAXBAT
 for e in supsrcPV_PV_edges:
     prob += flow_vars[e] <= PNORMSOLAR[node_hour(e[1])-start_hour] * prated_solar
 # flow conservation
@@ -198,7 +206,7 @@ if LpStatus[prob.status] == 'Optimal' and create_lp_file_if_feasible_and_less_th
 print('Total Cost of Energy = ', value(prob.objective))
 if print_variable_values_bool == 1:
     print_variable_values(prob)
-print('optimized battery capacity: ', CAPBAT.varValue)
+print('optimized battery capacity: ', cap_bat.varValue)
 
 print('Rated power of installation = ', prated_solar.varValue, ' kWp')
 
@@ -271,11 +279,11 @@ ax3.plot(interval, [-battery_cons[i]
                     for i in interval], label='bat -> cons', color='r')
 ax3.plot(interval, [PV_battery[i]
                     for i in interval], label='PV -> bat', color='g')
-ax3.plot(interval, np.full(len(interval), CAPBAT.varValue),label='bat capacity')
+ax3.plot(interval, np.full(len(interval), cap_bat.varValue),label='bat capacity')
 ax3.set_ylabel('battery usage', fontsize=fontsize)
 ax3.set_xlabel('hours', fontsize=fontsize)
 ax3.plot(interval, [battery_usage[i] for i in interval],label='bat usage')
-ax3.title.set_text('Battery capacity = ' + str(CAPBAT.varValue) + ' kW')
+ax3.title.set_text('Battery capacity = ' + str(cap_bat.varValue) + ' kW')
 
 leg = ax1.legend(prop={'size': fontsize * 0.9}, loc='upper right')
 leg = ax2.legend(prop={'size': fontsize * 0.9}, loc='upper right')
@@ -314,7 +322,7 @@ if create_log_file:
     file.write(string_tmp)
     string_tmp = 'LpStatus: '+LpStatus[prob.status]+'\n'
     file.write(string_tmp)
-    string_tmp = 'optimized battery capacity: '+ str(CAPBAT.varValue) + ' kWh \n'
+    string_tmp = 'optimized battery capacity: '+ str(cap_bat.varValue) + ' kWh \n'
     file.write(string_tmp)
     string_tmp = 'total cost: ' + str(value(prob.objective))[0:12] + ' CHF\n'
     file.write(string_tmp)
