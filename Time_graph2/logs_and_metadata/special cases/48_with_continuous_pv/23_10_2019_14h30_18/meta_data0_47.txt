@@ -1,0 +1,26 @@
+Information concerning this particular LP
+hours considered: [0,47], including 47
+Constants:
+CAPMINBAT = 0.0 kWh
+CAPMAXBAT = 10 kWh
+CAPEXVARIABLEBAT = 0.11 CHF/kWh
+CAPEXFIXEDBAT = 0.037 CHF
+PRATEDMINSOLAR = 0 kWp
+PRATEDMAXSOLAR = 25 kWp
+CAPEXVARIABLESOLAR = 0.2 CHF/kWp
+CAPEXFIXEDSOLAR = 0.13 CHF
+buying_price = 0.2 CHF
+selling_price = 0.05 CHF
+PMAXINJECTEDGRID = 10 kW
+PMAXEXTRACTEDGRID = 10 kW
+CDISCHARGEMAXBAT = 1 kW/kWh
+CCHARGEMAXBAT = 1 kW/kWh
+LIFETIMEBAT = 10 years
+LIFETIMESOLAR = 25 years
+Optimized rated power of installation = 23.0 kWp
+activated binary PV variables: ('supersupersourcePV', 'supersourcePV0'),('supersupersourcePV', 'supersourcePV1'),('supersupersourcePV', 'supersourcePV3'),('supersupersourcePV', 'supersourcePV4'),('supersupersourcePV', 'supersourcePV5'),('supersupersourcePV', 'supersourcePV6'),('supersupersourcePV', 'supersourcePV7'),('supersupersourcePV', 'supersourcePV8'),('supersupersourcePV', 'supersourcePV9'),('supersupersourcePV', 'supersourcePV10'),('supersupersourcePV', 'supersourcePV11'),('supersupersourcePV', 'supersourcePV12'),('supersupersourcePV', 'supersourcePV13'),('supersupersourcePV', 'supersourcePV14'),('supersupersourcePV', 'supersourcePV15'),('supersupersourcePV', 'supersourcePV16'),('supersupersourcePV', 'supersourcePV17'),('supersupersourcePV', 'supersourcePV19'),('supersupersourcePV', 'supersourcePV20'),('supersupersourcePV', 'supersourcePV21'),('supersupersourcePV', 'supersourcePV22'),('supersupersourcePV', 'supersourcePV23'),('supersupersourcePV', 'supersourcePV24'),
+LpStatus: Optimal
+optimized battery capacity: 9.879800394735991 kWh 
+total cost: 7.8416371518 CHF
+total cost if we only bought from the grid: 9.016000000000002
+time to solve LP = 0.1808030605316162 seconds 

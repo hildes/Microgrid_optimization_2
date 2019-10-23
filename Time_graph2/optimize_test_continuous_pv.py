@@ -96,20 +96,16 @@ start_time_graph = time.time()  # start counting
 
 G = nx.DiGraph()
 # --------------adding nodes--------------
-G.add_nodes_from(['supersource', 'supersupersourcePV', 'supersink'])
-supsrcPV_nodes = ['supersourcePV' + str(i) for i in range(PRATEDMAXSOLAR)]
+G.add_nodes_from(['supersource', 'supersupersourcePV','supersourcePV', 'supersink'])
 pv_nodes = ['PV' + str(hour) for hour in hours_considered]
 battery_nodes = ['Battery' + str(hour) for hour in hours_considered]
 consumption_nodes = ['Consumption' + str(hour) for hour in hours_considered]
-G.add_nodes_from(supsrcPV_nodes + pv_nodes + battery_nodes + consumption_nodes)
+G.add_nodes_from(pv_nodes + battery_nodes + consumption_nodes)
 # --------------adding arcs---------------
-supsupsrcPV_supsrcPV_edges = [('supersupersourcePV', supsrcPV_node)
-                              for supsrcPV_node in supsrcPV_nodes]
 supersource_cons_edges = [('supersource', consumption_node)
                           for consumption_node in consumption_nodes]
-supsrcPVx_PV_edges = []
-for supsrcPV_node in supsrcPV_nodes:
-    supsrcPVx_PV_edges += [(supsrcPV_node, pv_node) for pv_node in pv_nodes]
+supsrcPV_PV_edges = [('supersourcePV',pv_node) for pv_node in pv_nodes]
+supsupsrcPV_supsrcPV_edge = ('supersupersourcePV','supersourcePV')
 pv_cons_edges = [(pv_nodes[hour], consumption_nodes[hour])
                  for hour in range(NUMBER_OF_HOURS)]
 pv_bat_edges = [(pv_nodes[hour], battery_nodes[hour])
@@ -122,26 +118,19 @@ cons_supersink_edges = [(consumption_nodes[hour], 'supersink')
                         for hour in range(NUMBER_OF_HOURS)]
 pv_supersink_edges = [(pv_nodes[hour], 'supersink')
                       for hour in range(NUMBER_OF_HOURS)]
-G.add_edges_from(supsupsrcPV_supsrcPV_edges + supersource_cons_edges +
-                 supsrcPVx_PV_edges + pv_cons_edges + pv_bat_edges + bat_cons_edges +
+G.add_edges_from([supsupsrcPV_supsrcPV_edge] + supersource_cons_edges + supsrcPV_PV_edges
+                  + pv_cons_edges + pv_bat_edges + bat_cons_edges +
                  bat_bat_edges + cons_supersink_edges + pv_supersink_edges)
 print('--- %s seconds --- to create graph' % (time.time() - start_time_graph))
 
 fixed_flow_bounds = {}
 fixed_arc_flow_cost = {}
-# defining fixed bounds and costs
-# supsupsrcPV_supsrcPV_edges prob += flow_vars[e] <= total_sun_gen * pv_activation_vars[e]
+
 for e in supersource_cons_edges:
     fixed_flow_bounds[e] = [0, PMAXEXTRACTEDGRID]
     fixed_arc_flow_cost[e] = CENERGYGRID[node_hour(e[1])-start_hour] #'supersource','Consumption' + str(hour)
-
-for e in supsrcPVx_PV_edges:
-    fixed_flow_bounds[e] = [0,PGENSOLAR[node_hour(e[1])-start_hour]]
 for e in pv_cons_edges:
     fixed_flow_bounds[e] = [0,PCONSMAX]
-# pv_bat_edges prob += flow_vars[e] <= CCHARGEMAXBAT * CAPBAT
-# bat_cons_edges prob += flow_vars[e] <= CDISCHARGEMAXBAT * CAPBAT
-# bat_bat_edges prob += flow_vars[e] <= CAPBAT
 for e in cons_supersink_edges:
     fixed_flow_bounds[e] = [PCONS[node_hour(e[0])-start_hour],PCONSMAX+1]  # upper bound could just be infinity
 for e in pv_supersink_edges:
@@ -150,15 +139,9 @@ for e in pv_supersink_edges:
 
 start_time_constraints = time.time()  # start counting
 
-# [(('supersupersourcePV', 'supersourcePV' + str(i))) for i in
-# range(PRATEDMAXSOLAR)]  # should be replaced by range(PRATEDMINSOLAR,PRATEDMAXSOLAR)
-# because the first PRATEDMINSOLAR edges are going to be activated by default
-# for now PRATEDMINSOLAR is zero anyway
-
 
 flow_vars = LpVariable.dicts('flow', G.edges(), 0, None, cat='Continuous')
-pv_activation_vars = LpVariable.dicts(
-    'activation', supsupsrcPV_supsrcPV_edges, cat='Binary')
+prated_solar = LpVariable('rated power', PRATEDMINSOLAR, PRATEDMAXSOLAR, cat='Consinuous')
 CAPBAT = LpVariable('cap_bat', CAPMINBAT, CAPMAXBAT, cat='Continuous')
 non_zero_pv = LpVariable('non_zero_pv',0,1,cat='Binary')
 (fixed_mins, fixed_maxs) = splitDict(fixed_flow_bounds)
@@ -166,7 +149,7 @@ non_zero_pv = LpVariable('non_zero_pv',0,1,cat='Binary')
 prob = LpProblem('Energy flow problem', LpMinimize)
 # Creates the objective function
 prob += lpSum([flow_vars[arc] * fixed_arc_flow_cost[arc] for arc in fixed_arc_flow_cost] +
-              [pv_activation_vars[edge] * CAPEXVARIABLESOLAR for edge in supsupsrcPV_supsrcPV_edges] +
+              [prated_solar * CAPEXVARIABLESOLAR] +
                [CAPBAT * CAPEXVARIABLEBAT] +
                [non_zero_pv * CAPEXFIXEDSOLAR])
 
@@ -185,12 +168,12 @@ for e in pv_bat_edges:
 for e in bat_cons_edges:
     prob += flow_vars[e] <= CDISCHARGEMAXBAT * CAPBAT, 'discharging rate'+str(e[0])
 
-total_sun_gen = sum(PGENSOLAR)
-for e in supsupsrcPV_supsrcPV_edges:
-    if e == supsupsrcPV_supsrcPV_edges[0]:
-        prob += total_sun_gen * pv_activation_vars[e] <= flow_vars[e]
-    prob += flow_vars[e] <= total_sun_gen * pv_activation_vars[e]
-    prob += non_zero_pv >= pv_activation_vars[e]
+total_sun_gen = sum(PNORMSOLAR)
+prob += flow_vars[supsupsrcPV_supsrcPV_edge] <= total_sun_gen * prated_solar
+prob += non_zero_pv * PRATEDMAXSOLAR >= prated_solar
+#prob += non_zero_pv >= prated_solar * (1/PRATEDMAXSOLAR)
+for e in supsrcPV_PV_edges:
+    prob += flow_vars[e] <= PNORMSOLAR[node_hour(e[1])-start_hour] * prated_solar
 # flow conservation
 for n in G.nodes():
     if not n.startswith('super') or n.startswith('supersourcePV'):
@@ -211,15 +194,13 @@ if LpStatus[prob.status] == 'Optimal' and create_lp_file_if_feasible_and_less_th
     now = datetime.now()
     dt_string = now.strftime("%d_%m_%Y_%Hh%M")
     prob.writeLP('lp_files/'+dt_string+'_LP.lp')
+
 print('Total Cost of Energy = ', value(prob.objective))
 if print_variable_values_bool == 1:
     print_variable_values(prob)
 print('optimized battery capacity: ', CAPBAT.varValue)
 
-PRATEDSOLAR = 0
-for e in supsupsrcPV_supsrcPV_edges:
-    PRATEDSOLAR += pv_activation_vars[e].varValue
-print('Rated power of installation = ', PRATEDSOLAR, ' kWp')
+print('Rated power of installation = ', prated_solar.varValue, ' kWp')
 
 
 
@@ -256,7 +237,7 @@ fontsize = 12
 fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(
     len(interval) * pltsize, len(interval) * pltsize * pltratio))
 ax1.title.set_text(
-    'Rated power of PV installation = ' + str(PRATEDSOLAR) + ' kWp, total cost: ' + str(value(prob.objective))[
+    'Rated power of PV installation = ' + str(prated_solar) + ' kWp, total cost: ' + str(value(prob.objective))[
         0:12] + ' CHF')
 
 ax1.set_ylabel('Solar ', fontsize=fontsize)
@@ -329,15 +310,8 @@ if create_log_file:
     for key in constants:
         string_to_write = key+' = '+str(constants[key][0])+' '+str(constants[key][1])+'\n'
         file.write(string_to_write)
-    string_tmp = 'Optimized rated power of installation = '+ str(PRATEDSOLAR) + ' kWp\n'
+    string_tmp = 'Optimized rated power of installation = '+ str(prated_solar.varValue) + ' kWp\n'
     file.write(string_tmp)
-    activated = ''
-    for var in pv_activation_vars:
-        if pv_activation_vars[var].varValue == 1:
-            activated += str(var)+','
-    activated += '\n'
-    file.write('activated binary PV variables: ')
-    file.write(activated)
     string_tmp = 'LpStatus: '+LpStatus[prob.status]+'\n'
     file.write(string_tmp)
     string_tmp = 'optimized battery capacity: '+ str(CAPBAT.varValue) + ' kWh \n'
@@ -347,5 +321,7 @@ if create_log_file:
     string_tmp = 'total cost if we only bought from the grid: '+str(sum([CENERGYGRID[hour] * PCONS[hour] for hour in hours_considered]))+'\n'
     file.write(string_tmp)
     string_tmp = 'time to solve LP = ' + str(time_to_solve)+' seconds \n'
+    file.write(string_tmp)
+    string_tmp = '\ncontinuous pv rated power optimization'
     file.write(string_tmp)
     file.close()
