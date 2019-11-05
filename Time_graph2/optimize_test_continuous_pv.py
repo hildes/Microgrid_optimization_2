@@ -44,7 +44,7 @@ def node_hour(node):
     return -12
 
 
-consumption_data, PV_data = import_planair_data()
+consumption_data, pv_data = import_planair_data()
 #value, unit
 #in comment typical value from Christian
 constants = {'CAPMINBAT': [0.0, 'kWh'],#0
@@ -84,7 +84,7 @@ NUMBER_OF_HOURS = end_hour - start_hour#len(hours_considered)
 PCONS[0] = 0.0  # Otherwise the LP is infeasible !!
 PCONSMAX = max(PCONS)
 # production curve for installation of 1kW rated power
-PNORMSOLAR = [PV_data[i] for i in hours_considered]
+PNORMSOLAR = [pv_data[i] for i in hours_considered]
 PRATEDMINSOLAR = constants['PRATEDMINSOLAR'][0]
 PRATEDMAXSOLAR = constants['PRATEDMAXSOLAR'][0]
 PGENSOLAR = np.array([PNORMSOLAR[i] for i in range(len(PNORMSOLAR))])
@@ -253,26 +253,26 @@ data_dict = {}
 
 grid_cons = [flow_vars[supersource_cons_edge].varValue for supersource_cons_edge in supersource_cons_edges]
 data_dict['grid_cons'] = grid_cons
-PV_grid = [flow_vars[pv_supersink_edge].varValue for pv_supersink_edge in pv_supersink_edges]
-data_dict['pv_grid']=PV_grid
+pv_grid = [flow_vars[pv_supersink_edge].varValue for pv_supersink_edge in pv_supersink_edges]
+data_dict['pv_grid']=pv_grid
 battery_cons = [flow_vars[bat_cons_cons_edge].varValue for bat_cons_cons_edge in bat_cons_cons_edges]
 data_dict['battery_cons'] = battery_cons
 lost_discharging = [flow_vars[bat_bat_cons_edge].varValue*(1-ETADISCHARGEBAT) for bat_bat_cons_edge in bat_cons_cons_edges]
 data_dict['lost_discharging'] = lost_discharging
-PV_battery = [flow_vars[pv_pv_bat_edge].varValue for pv_pv_bat_edge in pv_pv_bat_edges]
-data_dict['PV_battery'] = PV_battery
+pv_battery = [flow_vars[pv_pv_bat_edge].varValue for pv_pv_bat_edge in pv_pv_bat_edges]
+data_dict['pv_battery'] = pv_battery
 lost_charging = [flow_vars[pv_pv_bat_edge].varValue*(1-ETACHARGEBAT) for pv_pv_bat_edge in pv_pv_bat_edges]
 data_dict['lost_charging'] = lost_charging
-PV_cons = [flow_vars[pv_cons_edge].varValue for pv_cons_edge in pv_cons_edges]
-data_dict['pv_cons'] = PV_cons
+pv_cons = [flow_vars[pv_cons_edge].varValue for pv_cons_edge in pv_cons_edges]
+data_dict['pv_cons'] = pv_cons
 battery_usage = [0] + [flow_vars[bat_bat_edge].varValue for bat_bat_edge in bat_bat_edges]
 data_dict['battery_usage'] = battery_usage
 data_dict['consumption_data']=consumption_data
-data_dict['normalized_pv'] = PV_data
+data_dict['normalized_pv'] = pv_data
 
 c=0
 for h in hours_considered:
-    if PV_battery[h]>0 and battery_cons[h]>0:
+    if pv_battery[h]>0 and battery_cons[h]>0:
         print(h, ' charging and discharging at the same time')
         c += 1
 if c == 0:
@@ -288,27 +288,27 @@ ax1.title.set_text(
         0:12] + ' CHF')
 
 ax1.set_ylabel('Solar ', fontsize=fontsize)
-ax1.plot(interval, [PV_battery[i] for i in interval], label='PV -> battery')
-ax1.plot(interval, [PV_grid[i]
+ax1.plot(interval, [pv_battery[i] for i in interval], label='PV -> battery')
+ax1.plot(interval, [pv_grid[i]
                     for i in interval], label='PV -> grid', marker='+')
-ax1.plot(interval, [PV_cons[i]
+ax1.plot(interval, [pv_cons[i]
                     for i in interval], label='PV -> cons', marker='x')
 
 ax1.plot(interval, [PGENSOLAR[i] for i in interval], label='normalized solar curve', color='y')
-sum_PV_into_ = [PV_battery[i] + PV_grid[i] + PV_cons[i]
+sum_PV_into_ = [pv_battery[i] + pv_grid[i] + pv_cons[i]
                 for i in range(NUMBER_OF_HOURS)]
 ax1.plot(interval, [sum_PV_into_[i] for i in interval], label='sum PV ->')
 
 ax2.plot(interval, [battery_cons[i]
                     for i in interval], label='battery -> cons')
-ax2.plot(interval, [PV_cons[i]
+ax2.plot(interval, [pv_cons[i]
                     for i in interval], label='PV -> cons', marker='x')
 ax2.set_ylabel('consumption', fontsize=fontsize)
 ax2.plot(interval, [PCONS[i]
                     for i in interval], label='consumption', marker='x')
 ax2.plot(interval, [grid_cons[i]
                     for i in interval], label='grid -> cons', marker='+')
-sum_into_cons = [PV_cons[i] + grid_cons[i] + battery_cons[i]
+sum_into_cons = [pv_cons[i] + grid_cons[i] + battery_cons[i]
                  for i in range(len(grid_cons))]
 ax2.plot(interval, [sum_into_cons[i] for i in interval], label='into cons')
 ax2.title.set_text('Energy cost: ' + str(buying_price) +
@@ -316,7 +316,7 @@ ax2.title.set_text('Energy cost: ' + str(buying_price) +
 
 ax3.plot(interval, [-battery_cons[i]
                     for i in interval], label='bat -> cons', color='r')
-ax3.plot(interval, [PV_battery[i]
+ax3.plot(interval, [pv_battery[i]
                     for i in interval], label='PV -> bat', color='g')
 ax3.plot(interval, np.full(len(interval), cap_bat.varValue),label='bat capacity')
 ax3.set_ylabel('battery usage', fontsize=fontsize)
