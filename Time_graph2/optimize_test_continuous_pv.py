@@ -9,12 +9,16 @@ from datetime import date
 from datetime import datetime
 import gurobipy
 import os
+import csv
 
 
 create_graphml_obj = 0 # do you want to create a graph object?
 create_lp_file_if_feasible_and_less_than_49_hours = 0
 print_variable_values_bool = 0
 create_log_file = 1
+create_csv = 1
+create_plot = 1
+optimize_with_gurobi = 1 #CBC is the default solver used by pulp
 
 def import_planair_data():
     data_cons = pd.read_excel(
@@ -40,17 +44,18 @@ def node_hour(node):
     return -12
 
 
-consumption_data, PV_data = import_planair_data() #in comment typical value from Christian
+consumption_data, PV_data = import_planair_data()
 #value, unit
+#in comment typical value from Christian
 constants = {'CAPMINBAT': [0.0, 'kWh'],#0
              'CAPMAXBAT': [10, 'kWh'],#10
-             'CAPEXVARIABLEBAT': [470, 'CHF/kWh'],#470
-             'CAPEXFIXEDBAT': [3700, 'CHF'],#3700
+             'CAPEXVARIABLEBAT': [85, 'CHF/kWh'],#470
+             'CAPEXFIXEDBAT': [100, 'CHF'],#3700
              'OPEXVARIABLEBAT': [0, 'CHF/year/kWh'],#0
              'OPEXFIXEDBAT': [0, 'CHF/year'],#0
              'PRATEDMINSOLAR': [0, 'kWp'],#0
              'PRATEDMAXSOLAR': [25, 'kWp'],#25
-             'CAPEXVARIABLESOLAR': [1200.0, 'CHF/kWp'],#1200.0  # CHF/kWp
+             'CAPEXVARIABLESOLAR': [1100.0, 'CHF/kWp'],#1200.0  # CHF/kWp
              'CAPEXFIXEDSOLAR': [10000.0, 'CHF'],#10000.0  # fixed investment costs in CHF
              'OPEXVARIABLESOLAR': [25, 'CHF/year/kWh'],#25
              'OPEXFIXEDSOLAR': [0, 'CHF/year'],#0
@@ -60,6 +65,8 @@ constants = {'CAPMINBAT': [0.0, 'kWh'],#0
              'PMAXEXTRACTEDGRID': [10, 'kW'],#10
              'CDISCHARGEMAXBAT': [1, 'kW/kWh'],#1
              'CCHARGEMAXBAT': [1, 'kW/kWh'],#1
+             'ETADISCHARGEBAT': [0.95, ' '],#0.95
+             'ETACHARGEBAT': [0.95, ' '],#0.95
              'LIFETIMEBAT': [10, 'years'],#10
              'LIFETIMESOLAR': [25, 'years']#25
              }
@@ -95,6 +102,8 @@ PMAXINJECTEDGRID = constants['PMAXINJECTEDGRID'][0]
 PMAXEXTRACTEDGRID = constants['PMAXEXTRACTEDGRID'][0]
 CDISCHARGEMAXBAT = constants['CDISCHARGEMAXBAT'][0]
 CCHARGEMAXBAT = constants['CCHARGEMAXBAT'][0]
+ETADISCHARGEBAT = constants['ETADISCHARGEBAT'][0]
+ETACHARGEBAT = constants['ETACHARGEBAT'][0]
 
 LIFETIMEBAT = constants['LIFETIMEBAT'][0]
 LIFETIMESOLAR = constants['LIFETIMESOLAR'][0]
@@ -107,26 +116,24 @@ G.add_nodes_from(['supersource', 'supersupersourcePV','supersourcePV', 'supersin
 pv_nodes = ['PV' + str(hour) for hour in hours_considered]
 battery_nodes = ['Battery' + str(hour) for hour in hours_considered]
 consumption_nodes = ['Consumption' + str(hour) for hour in hours_considered]
-G.add_nodes_from(pv_nodes + battery_nodes + consumption_nodes)
+pv_bat_nodes = ['pv_bat' + str(hour) for hour in hours_considered]
+bat_cons_nodes = ['bat_cons' + str(hour) for hour in hours_considered]
+G.add_nodes_from(pv_nodes + battery_nodes + consumption_nodes + pv_bat_nodes + bat_cons_nodes)
 # --------------adding arcs---------------
 supersource_cons_edges = [('supersource', consumption_node)
                           for consumption_node in consumption_nodes]
 supsrcPV_PV_edges = [('supersourcePV',pv_node) for pv_node in pv_nodes]
 supsupsrcPV_supsrcPV_edge = ('supersupersourcePV','supersourcePV')
-pv_cons_edges = [(pv_nodes[hour], consumption_nodes[hour])
-                 for hour in range(NUMBER_OF_HOURS)]
-pv_bat_edges = [(pv_nodes[hour], battery_nodes[hour])
-                for hour in range(NUMBER_OF_HOURS)]
-bat_cons_edges = [(battery_nodes[hour], consumption_nodes[hour])
-                  for hour in range(NUMBER_OF_HOURS)]
-bat_bat_edges = [(battery_nodes[i], battery_nodes[i + 1])
-                 for i in range(NUMBER_OF_HOURS)[:-1]]
-cons_supersink_edges = [(consumption_nodes[hour], 'supersink')
-                        for hour in range(NUMBER_OF_HOURS)]
-pv_supersink_edges = [(pv_nodes[hour], 'supersink')
-                      for hour in range(NUMBER_OF_HOURS)]
+pv_cons_edges = [(pv_nodes[hour], consumption_nodes[hour]) for hour in hours_considered]
+pv_pv_bat_edges = [(pv_nodes[hour], pv_bat_nodes[hour]) for hour in hours_considered]
+pv_bat_bat_edges = [(pv_bat_nodes[hour], battery_nodes[hour]) for hour in hours_considered]
+bat_bat_cons_edges = [(battery_nodes[hour], bat_cons_nodes[hour]) for hour in hours_considered]
+bat_cons_cons_edges = [(bat_cons_nodes[hour], consumption_nodes[hour]) for hour in hours_considered]
+bat_bat_edges = [(battery_nodes[i], battery_nodes[i + 1]) for i in range(NUMBER_OF_HOURS)[:-1]]
+cons_supersink_edges = [(consumption_nodes[hour], 'supersink') for hour in range(NUMBER_OF_HOURS)]
+pv_supersink_edges = [(pv_nodes[hour], 'supersink') for hour in range(NUMBER_OF_HOURS)]
 G.add_edges_from([supsupsrcPV_supsrcPV_edge] + supersource_cons_edges + supsrcPV_PV_edges
-                  + pv_cons_edges + pv_bat_edges + bat_cons_edges +
+                  + pv_cons_edges + pv_pv_bat_edges + pv_bat_bat_edges + bat_bat_cons_edges + bat_cons_cons_edges +
                  bat_bat_edges + cons_supersink_edges + pv_supersink_edges)
 print('--- %s seconds --- to create graph' % (time.time() - start_time_graph))
 
@@ -170,9 +177,9 @@ for arc_key in fixed_flow_bounds:
     flow_vars[arc_key].bounds(fixed_mins[arc_key],fixed_maxs[arc_key])
 for e in bat_bat_edges:
     prob += flow_vars[e] <= cap_bat, 'battery capacity'+str(e[0])
-for e in pv_bat_edges:
+for e in pv_pv_bat_edges:
     prob += flow_vars[e] <= CCHARGEMAXBAT * cap_bat, 'charging rate'+str(e[0])
-for e in bat_cons_edges:
+for e in bat_bat_cons_edges:
     prob += flow_vars[e] <= CDISCHARGEMAXBAT * cap_bat, 'discharging rate'+str(e[0])
 
 total_sun_gen = sum(PNORMSOLAR)
@@ -184,17 +191,27 @@ for e in supsrcPV_PV_edges:
     prob += flow_vars[e] <= PNORMSOLAR[node_hour(e[1])-start_hour] * prated_solar
 # flow conservation
 for n in G.nodes():
-    if not n.startswith('super') or n.startswith('supersourcePV'):
+    if not (n.startswith('super') or n.startswith('pv_bat') or n.startswith('bat_cons')) or n.startswith('supersourcePV'):
         prob += lpSum(flow_vars[ingoing] for ingoing in G.in_edges(n)) == \
             lpSum(flow_vars[outgoing] for outgoing in G.out_edges(n))
+# loss of flow because of the battery
+for n in pv_bat_nodes:
+    prob += lpSum(flow_vars[ingoing]*ETACHARGEBAT for ingoing in G.in_edges(n)) == \
+        lpSum(flow_vars[outgoing] for outgoing in G.out_edges(n))
+for n in bat_cons_nodes:
+    prob += lpSum(flow_vars[ingoing]*ETADISCHARGEBAT for ingoing in G.in_edges(n)) == \
+        lpSum(flow_vars[outgoing] for outgoing in G.out_edges(n))
 
 print('--- %s seconds --- to add constraints' %
       (time.time() - start_time_constraints))
 
 
 start_time = time.time()  # start counting
-# prob.solve()
-prob.solve(GUROBI())
+if optimize_with_gurobi:
+    prob.solve(GUROBI())
+else:
+    prob.solve()
+
 time_to_solve = time.time() - start_time
 print('--- %s seconds --- to solve' % time_to_solve)
 
@@ -206,7 +223,7 @@ if LpStatus[prob.status] == 'Optimal' and create_lp_file_if_feasible_and_less_th
 print('Total Cost of Energy = ', value(prob.objective))
 if print_variable_values_bool == 1:
     print_variable_values(prob)
-print('optimized battery capacity: ', cap_bat.varValue)
+print('optimized battery capacity: ', cap_bat.varValue, ' kWh')
 
 print('Rated power of installation = ', prated_solar.varValue, ' kWp')
 
@@ -227,22 +244,44 @@ for c in m.getConstrs():
         print('%s' % c.constrName)
 '''
 
-sub_interval = range(48)
+sub_interval = range(24,72)
 hours_considered_set = set(hours_considered)
 interval = list(hours_considered_set.intersection(sub_interval))
 #interval = range(len(hours_considered))
 
-grid_cons = [flow_vars[supersource_cons_edge].varValue for supersource_cons_edge in supersource_cons_edges]
-PV_grid = [flow_vars[pv_supersink_edge].varValue for pv_supersink_edge in pv_supersink_edges]
-battery_cons = [flow_vars[bat_cons_edge].varValue for bat_cons_edge in bat_cons_edges]
-PV_battery = [flow_vars[pv_bat_edge].varValue for pv_bat_edge in pv_bat_edges]
-PV_cons = [flow_vars[pv_cons_edge].varValue for pv_cons_edge in pv_cons_edges]
-battery_usage = [0] + [flow_vars[bat_bat_edge].varValue for bat_bat_edge in bat_bat_edges]
+data_dict = {}
 
-pltsize = 0.45
-pltratio = 0.25
+grid_cons = [flow_vars[supersource_cons_edge].varValue for supersource_cons_edge in supersource_cons_edges]
+data_dict['grid_cons'] = grid_cons
+PV_grid = [flow_vars[pv_supersink_edge].varValue for pv_supersink_edge in pv_supersink_edges]
+data_dict['pv_grid']=PV_grid
+battery_cons = [flow_vars[bat_cons_cons_edge].varValue for bat_cons_cons_edge in bat_cons_cons_edges]
+data_dict['battery_cons'] = battery_cons
+lost_discharging = [flow_vars[bat_bat_cons_edge].varValue*(1-ETADISCHARGEBAT) for bat_bat_cons_edge in bat_cons_cons_edges]
+data_dict['lost_discharging'] = lost_discharging
+PV_battery = [flow_vars[pv_pv_bat_edge].varValue for pv_pv_bat_edge in pv_pv_bat_edges]
+data_dict['PV_battery'] = PV_battery
+lost_charging = [flow_vars[pv_pv_bat_edge].varValue*(1-ETACHARGEBAT) for pv_pv_bat_edge in pv_pv_bat_edges]
+data_dict['lost_charging'] = lost_charging
+PV_cons = [flow_vars[pv_cons_edge].varValue for pv_cons_edge in pv_cons_edges]
+data_dict['pv_cons'] = PV_cons
+battery_usage = [0] + [flow_vars[bat_bat_edge].varValue for bat_bat_edge in bat_bat_edges]
+data_dict['battery_usage'] = battery_usage
+data_dict['consumption_data']=consumption_data
+data_dict['normalized_pv'] = PV_data
+
+c=0
+for h in hours_considered:
+    if PV_battery[h]>0 and battery_cons[h]>0:
+        print(h, ' charging and discharging at the same time')
+        c += 1
+if c == 0:
+    print('never charging and discharging at the same time')
+
+pltsize = 0.48
+pltratio = 0.35
 fontsize = 12
-fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(
+fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, 1, figsize=(
     len(interval) * pltsize, len(interval) * pltsize * pltratio))
 ax1.title.set_text(
     'Rated power of PV installation = ' + str(prated_solar) + ' kWp, total cost: ' + str(value(prob.objective))[
@@ -285,9 +324,13 @@ ax3.set_xlabel('hours', fontsize=fontsize)
 ax3.plot(interval, [battery_usage[i] for i in interval],label='bat usage')
 ax3.title.set_text('Battery capacity = ' + str(cap_bat.varValue) + ' kW')
 
+ax4.plot(interval, [lost_charging[i] for i in interval], label='E lost charging')
+ax4.plot(interval, [lost_discharging[i] for i in interval], label='E lost discharging')
+
 leg = ax1.legend(prop={'size': fontsize * 0.9}, loc='upper right')
 leg = ax2.legend(prop={'size': fontsize * 0.9}, loc='upper right')
 leg = ax3.legend(prop={'size': fontsize * 0.9}, loc='upper right')
+leg = ax4.legend(prop={'size': fontsize * 0.9}, loc='upper right')
 #plt.show()
 
 if create_log_file:
@@ -301,10 +344,19 @@ if create_log_file:
         print ("Creation of the directory %s failed" % path)
     else:
         print ("Successfully created the directory %s " % path)
+    if create_csv:
+        with open(path+'/data.csv', 'w') as outfile:
+            writer = csv.writer(outfile)
+            writer.writerow(data_dict.keys())
+            writer.writerows(zip(*data_dict.values()))
+        #with open(path+'/data.csv', 'w', newline='') as myfile:
+        #    wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
+        #    wr.writerow(mylist)
     if create_graphml_obj == 1:
         name = 'graph_'+str(start_hour)+'_'+str(end_hour-1)+'.graphml'
         nx.write_graphml(G, path+'/'+name)
-    fig.savefig(path+'/plot.png')
+    if create_plot:
+        fig.savefig(path+'/plot.png')
     if LpStatus[prob.status] == 'Optimal' and create_lp_file_if_feasible_and_less_than_49_hours and NUMBER_OF_HOURS<49:
         print('creating LP file')
         now = datetime.now()
@@ -318,18 +370,22 @@ if create_log_file:
     for key in constants:
         string_to_write = key+' = '+str(constants[key][0])+' '+str(constants[key][1])+'\n'
         file.write(string_to_write)
-    string_tmp = 'Optimized rated power of installation = '+ str(prated_solar.varValue) + ' kWp\n'
-    file.write(string_tmp)
     string_tmp = 'LpStatus: '+LpStatus[prob.status]+'\n'
+    file.write(string_tmp)
+    string_tmp = 'optimized rated power of installation = '+ str(prated_solar.varValue) + ' kWp\n'
     file.write(string_tmp)
     string_tmp = 'optimized battery capacity: '+ str(cap_bat.varValue) + ' kWh \n'
     file.write(string_tmp)
     string_tmp = 'total cost: ' + str(value(prob.objective))[0:12] + ' CHF\n'
     file.write(string_tmp)
-    string_tmp = 'total cost if we only bought from the grid: '+str(sum([CENERGYGRID[hour] * PCONS[hour] for hour in hours_considered]))+'\n'
+    string_tmp = 'total cost if we only bought from the grid: '+str(sum([CENERGYGRID[hour] * PCONS[hour] for hour in hours_considered]))+' CHF\n'
     file.write(string_tmp)
     string_tmp = 'time to solve LP = ' + str(time_to_solve)+' seconds \n'
     file.write(string_tmp)
-    string_tmp = '\ncontinuous pv rated power optimization'
+    string_tmp = '\ncontinuous pv rated power optimization with'
+    if optimize_with_gurobi:
+        string_tmp += ' Gurobi'
+    else:
+        string_tmp += ' pulp free solver'
     file.write(string_tmp)
     file.close()

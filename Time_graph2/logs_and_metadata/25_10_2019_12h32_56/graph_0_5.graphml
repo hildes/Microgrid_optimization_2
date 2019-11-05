@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><graph edgedefault="directed"><node id="supersource"/>
+<node id="supersupersourcePV"/>
+<node id="supersourcePV"/>
+<node id="supersink"/>
+<node id="PV0"/>
+<node id="PV1"/>
+<node id="PV2"/>
+<node id="PV3"/>
+<node id="PV4"/>
+<node id="PV5"/>
+<node id="Battery0"/>
+<node id="Battery1"/>
+<node id="Battery2"/>
+<node id="Battery3"/>
+<node id="Battery4"/>
+<node id="Battery5"/>
+<node id="Consumption0"/>
+<node id="Consumption1"/>
+<node id="Consumption2"/>
+<node id="Consumption3"/>
+<node id="Consumption4"/>
+<node id="Consumption5"/>
+<edge source="supersource" target="Consumption0"/>
+<edge source="supersource" target="Consumption1"/>
+<edge source="supersource" target="Consumption2"/>
+<edge source="supersource" target="Consumption3"/>
+<edge source="supersource" target="Consumption4"/>
+<edge source="supersource" target="Consumption5"/>
+<edge source="supersupersourcePV" target="supersourcePV"/>
+<edge source="supersourcePV" target="PV0"/>
+<edge source="supersourcePV" target="PV1"/>
+<edge source="supersourcePV" target="PV2"/>
+<edge source="supersourcePV" target="PV3"/>
+<edge source="supersourcePV" target="PV4"/>
+<edge source="supersourcePV" target="PV5"/>
+<edge source="PV0" target="Consumption0"/>
+<edge source="PV0" target="Battery0"/>
+<edge source="PV0" target="supersink"/>
+<edge source="PV1" target="Consumption1"/>
+<edge source="PV1" target="Battery1"/>
+<edge source="PV1" target="supersink"/>
+<edge source="PV2" target="Consumption2"/>
+<edge source="PV2" target="Battery2"/>
+<edge source="PV2" target="supersink"/>
+<edge source="PV3" target="Consumption3"/>
+<edge source="PV3" target="Battery3"/>
+<edge source="PV3" target="supersink"/>
+<edge source="PV4" target="Consumption4"/>
+<edge source="PV4" target="Battery4"/>
+<edge source="PV4" target="supersink"/>
+<edge source="PV5" target="Consumption5"/>
+<edge source="PV5" target="Battery5"/>
+<edge source="PV5" target="supersink"/>
+<edge source="Battery0" target="Consumption0"/>
+<edge source="Battery0" target="Battery1"/>
+<edge source="Battery1" target="Consumption1"/>
+<edge source="Battery1" target="Battery2"/>
+<edge source="Battery2" target="Consumption2"/>
+<edge source="Battery2" target="Battery3"/>
+<edge source="Battery3" target="Consumption3"/>
+<edge source="Battery3" target="Battery4"/>
+<edge source="Battery4" target="Consumption4"/>
+<edge source="Battery4" target="Battery5"/>
+<edge source="Battery5" target="Consumption5"/>
+<edge source="Consumption0" target="supersink"/>
+<edge source="Consumption1" target="supersink"/>
+<edge source="Consumption2" target="supersink"/>
+<edge source="Consumption3" target="supersink"/>
+<edge source="Consumption4" target="supersink"/>
+<edge source="Consumption5" target="supersink"/>
+</graph></graphml>

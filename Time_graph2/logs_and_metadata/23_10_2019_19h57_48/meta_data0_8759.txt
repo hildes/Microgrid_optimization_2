@@ -1,0 +1,31 @@
+Information concerning this particular LP
+hours considered: [0,8759], including 8759
+Constants:
+CAPMINBAT = 0.0 kWh
+CAPMAXBAT = 10 kWh
+CAPEXVARIABLEBAT = 470 CHF/kWh
+CAPEXFIXEDBAT = 3700 CHF
+OPEXVARIABLEBAT = 0 CHF/year/kWh
+OPEXFIXEDBAT = 0 CHF/year
+PRATEDMINSOLAR = 0 kWp
+PRATEDMAXSOLAR = 25 kWp
+CAPEXVARIABLESOLAR = 1200.0 CHF/kWp
+CAPEXFIXEDSOLAR = 10000.0 CHF
+OPEXVARIABLESOLAR = 25 CHF/year/kWh
+OPEXFIXEDSOLAR = 0 CHF/year
+buying_price = 0.2 CHF
+selling_price = 0.05 CHF
+PMAXINJECTEDGRID = 10 kW
+PMAXEXTRACTEDGRID = 10 kW
+CDISCHARGEMAXBAT = 1 kW/kWh
+CCHARGEMAXBAT = 1 kW/kWh
+LIFETIMEBAT = 10 years
+LIFETIMESOLAR = 25 years
+Optimized rated power of installation = 7.459982968717335 kWp
+LpStatus: Optimal
+optimized battery capacity: 0.0 kWh 
+total cost: 2003.0287231 CHF
+total cost if we only bought from the grid: 2018.1664000000035
+time to solve LP = 16.148664951324463 seconds 
+
+continuous pv rated power optimization
