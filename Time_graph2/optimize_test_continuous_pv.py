@@ -18,7 +18,7 @@ print_variable_values_bool = 0
 create_log_file = 1
 create_csv = 1
 create_plot = 1
-optimize_with_gurobi = 1 #CBC is the default solver used by pulp
+optimize_with_gurobi = 0 #CBC is the default solver used by pulp
 
 def import_planair_data():
     data_cons = pd.read_excel(
@@ -49,18 +49,19 @@ consumption_data, pv_data = import_planair_data()
 #in comment typical value from Christian
 constants = {'CAPMINBAT': [0.0, 'kWh'],#0
              'CAPMAXBAT': [10, 'kWh'],#10
-             'CAPEXVARIABLEBAT': [85, 'CHF/kWh'],#470
-             'CAPEXFIXEDBAT': [100, 'CHF'],#3700
+             'CAPEXVARIABLEBAT': [470, 'CHF/kWh'],#470
+             'CAPEXFIXEDBAT': [3700, 'CHF'],#3700
              'OPEXVARIABLEBAT': [0, 'CHF/year/kWh'],#0
              'OPEXFIXEDBAT': [0, 'CHF/year'],#0
              'PRATEDMINSOLAR': [0, 'kWp'],#0
              'PRATEDMAXSOLAR': [25, 'kWp'],#25
-             'CAPEXVARIABLESOLAR': [1100.0, 'CHF/kWp'],#1200.0  # CHF/kWp
+             'CAPEXVARIABLESOLAR': [1200.0, 'CHF/kWp'],#1200.0  # CHF/kWp
              'CAPEXFIXEDSOLAR': [10000.0, 'CHF'],#10000.0  # fixed investment costs in CHF
              'OPEXVARIABLESOLAR': [25, 'CHF/year/kWh'],#25
              'OPEXFIXEDSOLAR': [0, 'CHF/year'],#0
              'buying_price': [0.2,'CHF'],#0.2
              'selling_price': [0.05,'CHF'],#0.05
+             'CPOWERGRID': [80, 'CHF/kW'],#80
              'PMAXINJECTEDGRID': [10,'kW'],#10
              'PMAXEXTRACTEDGRID': [10, 'kW'],#10
              'CDISCHARGEMAXBAT': [1, 'kW/kWh'],#1
@@ -96,6 +97,7 @@ OPEXVARIABLESOLAR = constants['OPEXVARIABLESOLAR'][0]
 OPEXFIXEDSOLAR = constants['OPEXFIXEDSOLAR'][0]
 buying_price = constants['buying_price'][0]
 selling_price = constants['selling_price'][0]
+CPOWERGRID = constants['CPOWERGRID'][0]
 CENERGYGRID = np.full(NUMBER_OF_HOURS, buying_price)
 CINJECTIONGRID = np.full(NUMBER_OF_HOURS, selling_price)
 PMAXINJECTEDGRID = constants['PMAXINJECTEDGRID'][0]
@@ -159,13 +161,14 @@ prated_solar = LpVariable('rated power', PRATEDMINSOLAR, PRATEDMAXSOLAR, cat='Co
 cap_bat = LpVariable('cap_bat', CAPMINBAT, CAPMAXBAT, cat='Continuous')
 non_zero_pv = LpVariable('non_zero_pv',0,1,cat='Binary')
 non_zero_bat = LpVariable('non_zero_bat',0,1,cat='Binary')
-
+max_grid_cons = LpVariable('max_grid_cons',cat='Continuous')
 
 prob = LpProblem('Energy flow problem', LpMinimize)
 # Creates the objective function
 prob += lpSum([flow_vars[arc] * fixed_arc_flow_cost[arc] for arc in fixed_arc_flow_cost] +
               [non_zero_pv * ((CAPEXFIXEDSOLAR)/(LIFETIMESOLAR) + OPEXFIXEDSOLAR) + prated_solar * (CAPEXVARIABLESOLAR / LIFETIMESOLAR + OPEXVARIABLESOLAR)] +
-              [non_zero_bat * ((CAPEXFIXEDBAT)/(LIFETIMEBAT) + OPEXFIXEDBAT) + cap_bat * (CAPEXVARIABLEBAT / LIFETIMEBAT + OPEXVARIABLEBAT)])
+              [non_zero_bat * ((CAPEXFIXEDBAT)/(LIFETIMEBAT) + OPEXFIXEDBAT) + cap_bat * (CAPEXVARIABLEBAT / LIFETIMEBAT + OPEXVARIABLEBAT)] +
+              [max_grid_cons * CPOWERGRID])
 
 # fixed investment costs if there is >0 kWp installed
 (fixed_mins, fixed_maxs) = splitDict(fixed_flow_bounds)
@@ -181,6 +184,8 @@ for e in pv_pv_bat_edges:
     prob += flow_vars[e] <= CCHARGEMAXBAT * cap_bat, 'charging rate'+str(e[0])
 for e in bat_bat_cons_edges:
     prob += flow_vars[e] <= CDISCHARGEMAXBAT * cap_bat, 'discharging rate'+str(e[0])
+for e in supersource_cons_edges:#max power cost
+    prob += flow_vars[e] <= max_grid_cons
 
 total_sun_gen = sum(PNORMSOLAR)
 prob += flow_vars[supsupsrcPV_supsrcPV_edge] <= total_sun_gen * prated_solar
@@ -220,7 +225,8 @@ if LpStatus[prob.status] == 'Optimal' and create_lp_file_if_feasible_and_less_th
     dt_string = now.strftime("%d_%m_%Y_%Hh%M")
     prob.writeLP('lp_files/'+dt_string+'_LP.lp')
 
-print('Total Cost of Energy = ', value(prob.objective))
+print('total Cost of microgrid = ', value(prob.objective))
+print('total theoretical cost without microgrid: '+str(sum([CENERGYGRID[hour] * PCONS[hour] for hour in hours_considered]) + max_grid_cons.varValue * CPOWERGRID)+' CHF')
 if print_variable_values_bool == 1:
     print_variable_values(prob)
 print('optimized battery capacity: ', cap_bat.varValue, ' kWh')
@@ -277,6 +283,8 @@ for h in hours_considered:
         c += 1
 if c == 0:
     print('never charging and discharging at the same time')
+print('max_grid_cons * CPOWERGRID = ',max_grid_cons.varValue,'*',CPOWERGRID,'=',max_grid_cons.varValue * CPOWERGRID)
+
 
 pltsize = 0.48
 pltratio = 0.35
@@ -366,21 +374,17 @@ if create_log_file:
     file.write('Information concerning this particular LP\n')
     string_to_write = 'hours considered: ['+str(start_hour)+ ','+str(end_hour-1)+ '], including '+str(end_hour-1)+'\n'
     file.write(string_to_write)
-    file.write('Constants:\n')
+    string_tmp = 'Constants:\n'
     for key in constants:
-        string_to_write = key+' = '+str(constants[key][0])+' '+str(constants[key][1])+'\n'
-        file.write(string_to_write)
-    string_tmp = 'LpStatus: '+LpStatus[prob.status]+'\n'
-    file.write(string_tmp)
-    string_tmp = 'optimized rated power of installation = '+ str(prated_solar.varValue) + ' kWp\n'
-    file.write(string_tmp)
-    string_tmp = 'optimized battery capacity: '+ str(cap_bat.varValue) + ' kWh \n'
-    file.write(string_tmp)
-    string_tmp = 'total cost: ' + str(value(prob.objective))[0:12] + ' CHF\n'
-    file.write(string_tmp)
-    string_tmp = 'total cost if we only bought from the grid: '+str(sum([CENERGYGRID[hour] * PCONS[hour] for hour in hours_considered]))+' CHF\n'
-    file.write(string_tmp)
-    string_tmp = 'time to solve LP = ' + str(time_to_solve)+' seconds \n'
+        string_tmp += key+' = '+str(constants[key][0])+' '+str(constants[key][1])+'\n'
+    string_tmp += 'LpStatus: '+LpStatus[prob.status]+'\n'
+    string_tmp += 'optimized rated power of installation = '+ str(prated_solar.varValue) + ' kWp\n'
+    string_tmp += 'optimized battery capacity: '+ str(cap_bat.varValue) + ' kWh \n'
+    string_tmp += 'total cost: ' + str(value(prob.objective))[0:12] + ' CHF\n'
+    string_tmp += 'total cost if we only bought from the grid: '+str(sum([CENERGYGRID[hour] * PCONS[hour] for hour in hours_considered]) + max_grid_cons.varValue * CPOWERGRID)+' CHF\n'
+    string_tmp += 'max power taken from the grid: '+str(max_grid_cons.varValue)+' kW (at a cost of '+str(CPOWERGRID)+' CHF/kW)\n'
+    string_tmp += 'max power taken from grid without microgrid (max consumption):'+str(PCONSMAX)+'kW\n'
+    string_tmp += 'time to solve LP = ' + str(time_to_solve)+' seconds \n'
     file.write(string_tmp)
     string_tmp = '\ncontinuous pv rated power optimization with'
     if optimize_with_gurobi:

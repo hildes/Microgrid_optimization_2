@@ -1,0 +1,10 @@
+Information concerning this particular LP
+hours considered: [0,8759], including 8759
+LpStatus: Optimal
+optimized rated power of installation = 7.459982968717335 kWp
+optimized battery capacity: 0.0 kWh 
+total cost: 2555.3487231 CHF
+total cost if we only bought from the grid: 2570.4864000000034 CHF
+time to solve LP = 7.800004005432129 seconds 
+
+continuous pv rated power optimization with Gurobi
