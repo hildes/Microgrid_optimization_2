@@ -110,17 +110,40 @@ ETACHARGEBAT = constants['ETACHARGEBAT'][0]
 LIFETIMEBAT = constants['LIFETIMEBAT'][0]
 LIFETIMESOLAR = constants['LIFETIMESOLAR'][0]
 
+WEEK_DAY_PRESENCE = np.concatenate([np.full(7, 1), np.full(12, 0), np.full(5, 1)])
+WEEKEND_DAY_PRESENCE = np.concatenate([np.full(9, 1), np.full(3, 0), np.full(2, 1), np.full(6, 0), np.full(4, 1)])
+
+HOURLY_PRESENCE_WEEK = np.concatenate([np.tile(WEEK_DAY_PRESENCE, 5), np.tile(WEEKEND_DAY_PRESENCE, 2)])
+HOURLY_PRESENCE_YEAR = np.concatenate([np.tile(HOURLY_PRESENCE_WEEK, 52), np.tile(WEEK_DAY_PRESENCE, 1)])  # a year has
+# exactly (not really) 52 weeks and 1 day (365 - 7*52 = 1)
+LEAVING_THE_GARAGE_HOURS_BOOL = np.full(8760, 0)
+LEAVING_THE_GARAGE_HOURS_INDICES = []
+ENTERING_THE_GARAGE_HOURS_BOOL = np.full(8760, 0)
+ENTERING_THE_GARAGE_HOURS_INDICES = []
+for i in range(end_hour - 1):
+    if HOURLY_PRESENCE_YEAR[i] == 1 and HOURLY_PRESENCE_YEAR[i + 1] == 0: #  change to have proportional to time spent in
+        LEAVING_THE_GARAGE_HOURS_BOOL[i] = 1
+        LEAVING_THE_GARAGE_HOURS_INDICES += [i]
+    if HOURLY_PRESENCE_YEAR[i] == 0 and HOURLY_PRESENCE_YEAR[i + 1] == 1: #  change to have proportional to time spent out
+        ENTERING_THE_GARAGE_HOURS_BOOL[i] = 1
+        ENTERING_THE_GARAGE_HOURS_INDICES += [i]
+
 start_time_graph = time.time()  # start counting
 
 G = nx.DiGraph()
 # --------------adding nodes--------------
-G.add_nodes_from(['supersource', 'supersupersourcePV', 'supersourcePV', 'supersink'])
+G.add_nodes_from(['supersource', 'supersupersourcePV', 'supersourcePV', 'supersink', 'EV_sink', 'EV_source'])
 pv_nodes = ['PV' + str(hour) for hour in hours_considered]
 battery_nodes = ['Battery' + str(hour) for hour in hours_considered]
 consumption_nodes = ['Consumption' + str(hour) for hour in hours_considered]
 pv_bat_nodes = ['pv_bat' + str(hour) for hour in hours_considered]
 bat_cons_nodes = ['bat_cons' + str(hour) for hour in hours_considered]
-G.add_nodes_from(pv_nodes + battery_nodes + consumption_nodes + pv_bat_nodes + bat_cons_nodes)
+ev_nodes = ['EV' + str(hour) for hour in hours_considered]
+ev_cons_nodes = ['ev_cons' + str(hour) for hour in hours_considered]
+bat_ev_nodes = ['bat_ev' + str(hour) for hour in hours_considered]
+ev_bat_nodes = ['ev_bat' + str(hour) for hour in hours_considered]
+G.add_nodes_from(
+    pv_nodes + battery_nodes + consumption_nodes + pv_bat_nodes + bat_cons_nodes + ev_nodes + ev_cons_nodes + bat_ev_nodes + ev_bat_nodes)
 # --------------adding arcs---------------
 supersource_cons_edges = [('supersource', consumption_node)
                           for consumption_node in consumption_nodes]
@@ -134,9 +157,22 @@ bat_cons_cons_edges = [(bat_cons_nodes[hour], consumption_nodes[hour]) for hour 
 bat_bat_edges = [(battery_nodes[i], battery_nodes[i + 1]) for i in range(NUMBER_OF_HOURS)[:-1]]
 cons_supersink_edges = [(consumption_nodes[hour], 'supersink') for hour in range(NUMBER_OF_HOURS)]
 pv_supersink_edges = [(pv_nodes[hour], 'supersink') for hour in range(NUMBER_OF_HOURS)]
+ev_ev_edges = [(ev_nodes[i], ev_nodes[i + 1]) for i in range(NUMBER_OF_HOURS)[:-1]]
+ev_ev_cons_edges = [(ev_nodes[hour], ev_cons_nodes[hour]) for hour in hours_considered_indices]
+ev_cons_cons_edges = [(ev_cons_nodes[hour], consumption_nodes[hour]) for hour in hours_considered_indices]
+grid_ev_edges = [('supersource', ev_nodes[hour]) for hour in hours_considered_indices]
+pv_ev_edges = [(pv_nodes[hour], ev_nodes[hour]) for hour in hours_considered_indices]
+ev_sink_edges = [(ev_nodes[hour], 'EV_sink') for hour in LEAVING_THE_GARAGE_HOURS_INDICES]
+source_ev_edges = [('EV_source', ev_nodes[hour]) for hour in ENTERING_THE_GARAGE_HOURS_INDICES]
+bat_bat_ev_edges = [(battery_nodes[hour], bat_ev_nodes[hour]) for hour in hours_considered_indices]
+bat_ev_ev_edges = [(bat_ev_nodes[hour], ev_nodes[hour]) for hour in hours_considered_indices]
+ev_ev_bat_edges = [(ev_nodes[hour], ev_bat_nodes[hour]) for hour in hours_considered_indices]
+ev_bat_bat_edges = [(ev_bat_nodes[hour], battery_nodes[hour]) for hour in hours_considered_indices]
+
 G.add_edges_from([supsupsrcPV_supsrcPV_edge] + supersource_cons_edges + supsrcPV_PV_edges
                  + pv_cons_edges + pv_pv_bat_edges + pv_bat_bat_edges + bat_bat_cons_edges + bat_cons_cons_edges +
-                 bat_bat_edges + cons_supersink_edges + pv_supersink_edges)
+                 bat_bat_edges + cons_supersink_edges + pv_supersink_edges + ev_ev_edges + ev_ev_cons_edges +
+                 ev_cons_cons_edges + grid_ev_edges + pv_ev_edges + ev_sink_edges + source_ev_edges)
 print('--- %s seconds --- to create graph' % (time.time() - start_time_graph))
 
 fixed_flow_bounds = {}
@@ -166,10 +202,10 @@ prob = LpProblem('Energy flow problem', LpMinimize)
 # Creates the objective function
 prob += lpSum([flow_vars[arc] * fixed_arc_flow_cost[arc] for arc in fixed_arc_flow_cost] +
               [non_zero_pv * ((CAPEXFIXEDSOLAR) / (LIFETIMESOLAR) + OPEXFIXEDSOLAR) + prated_solar * (
-                          CAPEXVARIABLESOLAR / LIFETIMESOLAR + OPEXVARIABLESOLAR)] +
+                      CAPEXVARIABLESOLAR / LIFETIMESOLAR + OPEXVARIABLESOLAR)] +
               [non_zero_bat * (
-                          (CAPEXFIXEDBAT * len(hours_considered)) / (LIFETIMEBAT * 8760) + OPEXFIXEDBAT) + cap_bat * (
-                           CAPEXVARIABLEBAT * len(hours_considered) / (LIFETIMEBAT * 8760) + OPEXVARIABLEBAT)] +
+                      (CAPEXFIXEDBAT * len(hours_considered)) / (LIFETIMEBAT * 8760) + OPEXFIXEDBAT) + cap_bat * (
+                       CAPEXVARIABLEBAT * len(hours_considered) / (LIFETIMEBAT * 8760) + OPEXVARIABLEBAT)] +
               [max_grid_cons * CPOWERGRID])
 
 # fixed investment costs if there is >0 kWp installed
