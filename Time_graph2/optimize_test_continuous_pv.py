@@ -59,8 +59,8 @@ constants = {'CAPMINBAT': [0.0, 'kWh'],  # 0
              'CAPEXFIXEDSOLAR': [10000.0, 'CHF'],  # 10000.0  # fixed investment costs in CHF
              'OPEXVARIABLESOLAR': [25, 'CHF/year/kWh'],  # 25
              'OPEXFIXEDSOLAR': [0, 'CHF/year'],  # 0
-             'buying_price': [0.2, 'CHF'],  # 0.2
-             'selling_price': [0.05, 'CHF'],  # 0.05
+             'buying_price': [0.2, 'CHF/kWh'],  # 0.2
+             'selling_price': [0.05, 'CHF/kWh'],  # 0.05
              'CPOWERGRID': [80, 'CHF/kW'],  # 80
              'PMAXINJECTEDGRID': [10, 'kW'],  # 10
              'PMAXEXTRACTEDGRID': [10, 'kW'],  # 10
@@ -69,7 +69,15 @@ constants = {'CAPMINBAT': [0.0, 'kWh'],  # 0
              'ETADISCHARGEBAT': [0.95, ' '],  # 0.95
              'ETACHARGEBAT': [0.95, ' '],  # 0.95
              'LIFETIMEBAT': [10, 'years'],  # 10
-             'LIFETIMESOLAR': [25, 'years']  # 25
+             'LIFETIMESOLAR': [25, 'years'],  # 25
+             'CAP_BAT_EV': [50, 'kWh'],
+             'ETA_CHARGE_EV': [0.95, ' '],
+             'ETA_DISCHARGE_EV': [0.95, ' '],
+             'MIN_LEAVING_CHARGE_PERCENT_EV': [0.9, '%'],
+             'REENTRY_CHARGE_PERCENT_EV': [0.25, '%'],
+             'CCHARGE_MAX_EV': [1, 'kW/kWh'],
+             'CDISCHARGE_MAX_EV': [1, 'kW/kWh'],
+             'CENERGY_CITY': [0.2, 'CHF/kWh']
              }
 CAPMINBAT = constants['CAPMINBAT'][0]
 CAPMAXBAT = constants['CAPMAXBAT'][0]
@@ -95,11 +103,9 @@ CAPEXVARIABLESOLAR = constants['CAPEXVARIABLESOLAR'][0]
 CAPEXFIXEDSOLAR = constants['CAPEXFIXEDSOLAR'][0]
 OPEXVARIABLESOLAR = constants['OPEXVARIABLESOLAR'][0]
 OPEXFIXEDSOLAR = constants['OPEXFIXEDSOLAR'][0]
-buying_price = constants['buying_price'][0]
-selling_price = constants['selling_price'][0]
 CPOWERGRID = constants['CPOWERGRID'][0]
-CENERGYGRID = np.full(NUMBER_OF_HOURS, buying_price)
-CINJECTIONGRID = np.full(NUMBER_OF_HOURS, selling_price)
+CENERGYGRID = np.full(NUMBER_OF_HOURS, constants['buying_price'][0])
+CINJECTIONGRID = np.full(NUMBER_OF_HOURS, constants['selling_price'][0])
 PMAXINJECTEDGRID = constants['PMAXINJECTEDGRID'][0]
 PMAXEXTRACTEDGRID = constants['PMAXEXTRACTEDGRID'][0]
 CDISCHARGEMAXBAT = constants['CDISCHARGEMAXBAT'][0]
@@ -109,6 +115,15 @@ ETACHARGEBAT = constants['ETACHARGEBAT'][0]
 
 LIFETIMEBAT = constants['LIFETIMEBAT'][0]
 LIFETIMESOLAR = constants['LIFETIMESOLAR'][0]
+
+CAP_BAT_EV = constants['CAP_BAT_EV'][0]
+ETA_CHARGE_EV = constants['ETA_CHARGE_EV'][0]
+ETA_DISCHARGE_EV = constants['ETA_DISCHARGE_EV'][0]
+MIN_LEAVING_CHARGE_PERCENT_EV = constants['MIN_LEAVING_CHARGE_PERCENT_EV'][0]
+REENTRY_CHARGE_PERCENT_EV = constants['REENTRY_CHARGE_PERCENT_EV'][0]
+CCHARGE_MAX_EV = constants['CCHARGE_MAX_EV'][0]
+CDISCHARGE_MAX_EV = constants['CDISCHARGE_MAX_EV'][0]
+CENERGY_CITY = np.full(NUMBER_OF_HOURS, constants['CENERGY_CITY'][0])
 
 WEEK_DAY_PRESENCE = np.concatenate([np.full(7, 1), np.full(12, 0), np.full(5, 1)])
 WEEKEND_DAY_PRESENCE = np.concatenate([np.full(9, 1), np.full(3, 0), np.full(2, 1), np.full(6, 0), np.full(4, 1)])
@@ -191,6 +206,9 @@ for e in pv_supersink_edges:
     fixed_arc_flow_cost[e] = -CINJECTIONGRID[node_hour(e[0]) - start_hour]
     fixed_flow_bounds[e] = [0, PMAXINJECTEDGRID]
 
+for e in grid_ev_edges:
+    fixed_arc_flow_cost[e] = CENERGYGRID[node_hour(e[1]) - start_hour]
+
 start_time_constraints = time.time()  # start counting
 
 flow_vars = LpVariable.dicts('flow', G.edges(), 0, None, cat='Continuous')
@@ -227,17 +245,33 @@ for e in bat_bat_cons_edges:
 for e in supersource_cons_edges:  # max power cost
     prob += flow_vars[e] <= max_grid_cons
 
+for e in ev_ev_edges:
+    prob += flow_vars[e] <= CAP_BAT_EV
+for e in ev_ev_cons_edges:
+    prob += flow_vars[e] <= CDISCHARGE_MAX_EV * CAP_BAT_EV
+for e in grid_ev_edges:
+    prob += flow_vars[e] <= CCHARGE_MAX_EV * CAP_BAT_EV
+    prob += flow_vars[e] <= PMAXEXTRACTEDGRID
+for e in pv_ev_edges:
+    prob += flow_vars[e] <= CCHARGE_MAX_EV * CAP_BAT_EV
+for e in ev_sink_edges:
+    prob += flow_vars[e] >= MIN_LEAVING_CHARGE_PERCENT_EV * CAP_BAT_EV
+for e in source_ev_edges:
+    prob += flow_vars[e] == REENTRY_CHARGE_PERCENT_EV * CAP_BAT_EV
+
+
+
 total_sun_gen = sum(PNORMSOLAR)
 prob += flow_vars[supsupsrcPV_supsrcPV_edge] <= total_sun_gen * prated_solar
 prob += prated_solar <= non_zero_pv * PRATEDMAXSOLAR
-# prob += non_zero_pv >= prated_solar * (1/PRATEDMAXSOLAR)
 prob += cap_bat <= non_zero_bat * CAPMAXBAT
 for e in supsrcPV_PV_edges:
     prob += flow_vars[e] <= PNORMSOLAR[node_hour(e[1]) - start_hour] * prated_solar
 # flow conservation
 for n in G.nodes():
     if not (n.startswith('super') or n.startswith('pv_bat') or n.startswith('bat_cons')) or n.startswith(
-            'supersourcePV'):
+            'supersourcePV' or n.startswith('ev_bat') or n.startswith('bat_ev') or
+            n.startswith('EV_sink') or n.startswith('EV_source') or n.startswith('ev_cons')):
         prob += lpSum(flow_vars[ingoing] for ingoing in G.in_edges(n)) == \
                 lpSum(flow_vars[outgoing] for outgoing in G.out_edges(n))
 # loss of flow because of the battery
@@ -246,6 +280,15 @@ for n in pv_bat_nodes:
             lpSum(flow_vars[outgoing] for outgoing in G.out_edges(n))
 for n in bat_cons_nodes:
     prob += lpSum(flow_vars[ingoing] * ETADISCHARGEBAT for ingoing in G.in_edges(n)) == \
+            lpSum(flow_vars[outgoing] for outgoing in G.out_edges(n))
+for n in ev_bat_nodes:
+    prob += lpSum(flow_vars[ingoing] * ETA_DISCHARGE_EV * ETACHARGEBAT for ingoing in G.in_edges(n)) == \
+            lpSum(flow_vars[outgoing] for outgoing in G.out_edges(n))
+for n in bat_ev_nodes:
+    prob += lpSum(flow_vars[ingoing] * ETADISCHARGEBAT * ETA_CHARGE_EV for ingoing in G.in_edges(n)) == \
+            lpSum(flow_vars[outgoing] for outgoing in G.out_edges(n))
+for n in ev_cons_nodes:
+    prob += lpSum(flow_vars[ingoing] * ETA_DISCHARGE_EV for ingoing in G.in_edges(n)) == \
             lpSum(flow_vars[outgoing] for outgoing in G.out_edges(n))
 
 print('--- %s seconds --- to add constraints' %
@@ -360,8 +403,8 @@ ax2.plot(interval, [grid_cons[i]
 sum_into_cons = [pv_cons[i] + grid_cons[i] + battery_cons[i]
                  for i in range(len(grid_cons))]
 ax2.plot(interval, [sum_into_cons[i] for i in interval_indices], label='into cons')
-ax2.title.set_text('Energy cost: ' + str(buying_price) +
-                   ', can be sold for: ' + str(selling_price))
+ax2.title.set_text('Energy cost: ' + str(CENERGYGRID[0]) +
+                   ', can be sold for: ' + str(CINJECTIONGRID[0]))
 
 ax3.plot(interval, [-battery_cons[i]
                     for i in interval_indices], label='bat -> cons', color='r')
