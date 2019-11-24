@@ -77,7 +77,7 @@ constants = {'CAP_MIN_BAT': [0.0, 'kWh'],  # 0
              'REENTRY_CHARGE_PERCENT_EV': [0.25, '%'],
              'CCHARGE_MAX_EV': [1, 'kW/kWh'],
              'CDISCHARGE_MAX_EV': [1, 'kW/kWh'],
-             'CENERGY_CITY': [0.2, 'CHF/kWh']
+             'C_ENERGY_CITY': [0.2, 'CHF/kWh']
              }
 CAP_MIN_BAT = constants['CAP_MIN_BAT'][0]
 CAP_MAX_BAT = constants['CAP_MAX_BAT'][0]
@@ -123,7 +123,7 @@ MIN_LEAVING_CHARGE_PERCENT_EV = constants['MIN_LEAVING_CHARGE_PERCENT_EV'][0]
 REENTRY_CHARGE_PERCENT_EV = constants['REENTRY_CHARGE_PERCENT_EV'][0]
 CCHARGE_MAX_EV = constants['CCHARGE_MAX_EV'][0]
 CDISCHARGE_MAX_EV = constants['CDISCHARGE_MAX_EV'][0]
-CENERGY_CITY = np.full(NUMBER_OF_HOURS, constants['CENERGY_CITY'][0])
+C_ENERGY_CITY = np.full(NUMBER_OF_HOURS, constants['C_ENERGY_CITY'][0])
 
 WEEK_DAY_PRESENCE = np.concatenate([np.full(7, 1), np.full(12, 0), np.full(5, 1)])
 WEEKEND_DAY_PRESENCE = np.concatenate([np.full(9, 1), np.full(3, 0), np.full(2, 1), np.full(6, 0), np.full(4, 1)])
@@ -208,6 +208,8 @@ for e in pv_supersink_edges:
 
 for e in grid_ev_edges:
     fixed_arc_flow_cost[e] = C_ENERGY_GRID[node_hour(e[1]) - start_hour]
+for e in source_ev_edges:
+    fixed_arc_flow_cost[e] = C_ENERGY_CITY[node_hour(e[1]) - start_hour]
 
 start_time_constraints = time.time()  # start counting
 
@@ -309,8 +311,12 @@ if LpStatus[prob.status] == 'Optimal' and create_lp_file_if_feasible_and_less_th
     prob.writeLP('lp_files/' + dt_string + '_LP.lp')
 
 print('total Cost of microgrid = ', value(prob.objective))
-print('total theoretical cost without microgrid: ' + str(sum([C_ENERGY_GRID[hour] * PCONS[hour] for hour in
-                                                              hours_considered_indices]) + P_CONS_MAX * C_POWER_GRID) + ' CHF')
+''' # hard to calculate in one folrmula as the EV battery can play a complex role in optimizing usage of grid and EV
+print('total theoretical cost without microgrid: '
+      + str(sum([C_ENERGY_GRID[hour] * PCONS[hour] for hour in hours_considered_indices] +
+                [C_ENERGY_CITY[h] * REENTRY_CHARGE_PERCENT_EV * CAP_BAT_EV for h in ENTERING_THE_GARAGE_HOURS_INDICES]) +
+            P_CONS_MAX * C_POWER_GRID) + ' CHF')
+'''
 if print_variable_values_bool == 1:
     print_variable_values(prob)
 print('optimized battery capacity: ', cap_bat.varValue, ' kWh')
