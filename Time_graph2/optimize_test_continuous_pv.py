@@ -121,10 +121,12 @@ LEAVING_THE_GARAGE_HOURS_INDICES = []
 ENTERING_THE_GARAGE_HOURS_BOOL = np.full(8760, 0)
 ENTERING_THE_GARAGE_HOURS_INDICES = []
 for i in range(end_hour - 1):
-    if HOURLY_PRESENCE_YEAR[i] == 1 and HOURLY_PRESENCE_YEAR[i + 1] == 0: #  change to have proportional to time spent in
+    if HOURLY_PRESENCE_YEAR[i] == 1 and HOURLY_PRESENCE_YEAR[i + 1] == 0: # change to have proportional to time spent
+        # in
         LEAVING_THE_GARAGE_HOURS_BOOL[i] = 1
         LEAVING_THE_GARAGE_HOURS_INDICES += [i]
-    if HOURLY_PRESENCE_YEAR[i] == 0 and HOURLY_PRESENCE_YEAR[i + 1] == 1: #  change to have proportional to time spent out
+    if HOURLY_PRESENCE_YEAR[i] == 0 and HOURLY_PRESENCE_YEAR[i + 1] == 1: # change to have proportional to time spent
+        # out
         ENTERING_THE_GARAGE_HOURS_BOOL[i] = 1
         ENTERING_THE_GARAGE_HOURS_INDICES += [i]
 
@@ -142,8 +144,8 @@ ev_nodes = ['EV' + str(hour) for hour in hours_considered]
 ev_cons_nodes = ['ev_cons' + str(hour) for hour in hours_considered]
 bat_ev_nodes = ['bat_ev' + str(hour) for hour in hours_considered]
 ev_bat_nodes = ['ev_bat' + str(hour) for hour in hours_considered]
-G.add_nodes_from(
-    pv_nodes + battery_nodes + consumption_nodes + pv_bat_nodes + bat_cons_nodes + ev_nodes + ev_cons_nodes + bat_ev_nodes + ev_bat_nodes)
+G.add_nodes_from(pv_nodes + battery_nodes + consumption_nodes + pv_bat_nodes + bat_cons_nodes + ev_nodes +
+                 ev_cons_nodes + bat_ev_nodes + ev_bat_nodes)
 # --------------adding arcs---------------
 supersource_cons_edges = [('supersource', consumption_node)
                           for consumption_node in consumption_nodes]
@@ -181,8 +183,8 @@ fixed_arc_flow_cost = {}
 for e in supersource_cons_edges:
     fixed_flow_bounds[e] = [0, PMAXEXTRACTEDGRID]
     fixed_arc_flow_cost[e] = CENERGYGRID[node_hour(e[1]) - start_hour]  # 'supersource','Consumption' + str(hour)
-for e in pv_cons_edges:
-    fixed_flow_bounds[e] = [0, PCONSMAX]
+#for e in pv_cons_edges:
+#    fixed_flow_bounds[e] = [0, PCONSMAX]
 for e in cons_supersink_edges:
     fixed_flow_bounds[e] = [PCONS[node_hour(e[0]) - start_hour], PCONSMAX + 1]  # upper bound could just be infinity
 for e in pv_supersink_edges:
