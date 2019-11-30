@@ -85,21 +85,26 @@ end_hour = int(8760/resolution)
 hours_considered = range(start_hour, end_hour)
 hours_considered_indices = range(len(hours_considered))
 PCONS = [consumption_data[i] for i in hours_considered]
+PNORMSOLAR = [pv_data[i] for i in hours_considered]
 if resolution == 1.5:
     PCONS = []
+    PNORMSOLAR = []
     for i in range(int(8760/3)):
         PCONS += [consumption_data[i] * (2/3) + consumption_data[i + 1] * (1/3), consumption_data[i + 1] * (1/3)
                   + consumption_data[i+2] * 2/3]
+        PNORMSOLAR += [pv_data[i] * (2/3) + pv_data[i + 1] * (1/3), pv_data[i + 1] * (1/3) + pv_data[i+2] * 2/3]
 if resolution == 2:
     PCONS = [(consumption_data[i] + consumption_data[i + 1]) / 2 for i in range(end_hour)]
+    PNORMSOLAR = [(pv_data[i] + pv_data[i + 1]) / 2 for i in range(end_hour)]
 if resolution == 3:
     PCONS = [(consumption_data[i] + consumption_data[i + 1] + consumption_data[i + 2]) / 3 for i in range(end_hour)]
+    PNORMSOLAR = [(pv_data[i] + pv_data[i + 1] + pv_data[i + 2]) / 3 for i in range(end_hour)]
 NUMBER_OF_HOURS = end_hour - start_hour  # len(hours_considered)
 
 PCONS[0] = 0.0  # Otherwise the LP is infeasible !!
 PCONSMAX = max(PCONS)
 # production curve for installation of 1kW rated power
-PNORMSOLAR = [pv_data[i] for i in hours_considered]
+
 P_RATED_MIN_SOLAR = constants['P_RATED_MIN_SOLAR'][0]
 P_RATED_MAX_SOLAR = constants['P_RATED_MAX_SOLAR'][0]
 PGENSOLAR = np.array([PNORMSOLAR[i] for i in range(len(PNORMSOLAR))])
