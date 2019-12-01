@@ -17,9 +17,10 @@ create_lp_file_if_feasible_and_less_than_49_hours = 0
 print_variable_values_bool = 0
 create_log_file = 1
 create_csv = 1
+create_tendance = 1
 create_plot = 1
 optimize_with_gurobi = 1  # CBC is the default solver used by pulp
-resolution = 2.5  # can be 1,1.5,2,2.5,3,4
+resolution = 1  # can be 1,1.5,2,2.5,3,4
 
 
 def import_planair_data():
@@ -47,13 +48,12 @@ def node_hour(node):
 
 
 consumption_data, pv_data = import_planair_data()
-print(type(consumption_data))
 # value, unit
 # in comment typical value from Christian
 constants = {'CAP_MIN_BAT': [0.0, 'kWh'],  # 0
              'CAP_MAX_BAT': [10, 'kWh'],  # 10
-             'CAPEX_VARIABLE_BAT': [47, 'CHF/kWh'],  # 470
-             'CAPEX_FIXED_BAT': [370, 'CHF'],  # 3700
+             'CAPEX_VARIABLE_BAT': [470, 'CHF/kWh'],  # 470
+             'CAPEX_FIXED_BAT': [3700, 'CHF'],  # 3700
              'OPEX_VARIABLE_BAT': [0, 'CHF/year/kWh'],  # 0
              'OPEX_FIXED_BAT': [0, 'CHF/year'],  # 0
              'P_RATED_MIN_SOLAR': [0, 'kWp'],  # 0
@@ -179,9 +179,10 @@ for e in supersource_cons_edges:
     fixed_flow_bounds[e] = [0, PMAXEXTRACTEDGRID]
     fixed_arc_flow_cost[e] = C_ENERGY_GRID[node_hour(e[1]) - start_hour]  # 'supersource','Consumption' + str(hour)
 for e in pv_cons_edges:
-    fixed_flow_bounds[e] = [0, PCONSMAX]
+    fixed_flow_bounds[e] = [0, 5 * PCONSMAX + 99999]
 for e in cons_supersink_edges:
-    fixed_flow_bounds[e] = [PCONS[node_hour(e[0]) - start_hour], PCONSMAX + 1]  # upper bound could just be infinity
+    fixed_flow_bounds[e] = [PCONS[node_hour(e[0]) - start_hour],
+                            5 * PCONSMAX + 99999]  # upper bound could just be infinity
 for e in pv_supersink_edges:
     fixed_arc_flow_cost[e] = -CINJECTIONGRID[node_hour(e[0]) - start_hour]
     fixed_flow_bounds[e] = [0, PMAXINJECTEDGRID]
@@ -196,15 +197,30 @@ non_zero_bat = LpVariable('non_zero_bat', 0, 1, cat='Binary')
 max_grid_cons = LpVariable('max_grid_cons', cat='Continuous')
 
 prob = LpProblem('Energy flow problem', LpMinimize)
-# Creates the objective function
-prob += lpSum([flow_vars[arc] * fixed_arc_flow_cost[arc] for arc in fixed_arc_flow_cost] +
-              [non_zero_pv * ((CAPEX_FIXED_SOLAR) / (LIFETIMESOLAR) + OPEXFIXEDSOLAR) + prated_solar * (
+
+'''
+                                     [non_zero_pv * ((CAPEX_FIXED_SOLAR) / (LIFETIMESOLAR) + OPEXFIXEDSOLAR) +
+               prated_solar * (
                       CAPEX_VARIABLE_SOLAR / LIFETIMESOLAR + OPEXVARIABLESOLAR)] +
               [non_zero_bat * ((CAPEX_FIXED_BAT * len(hours_considered)) / (
-                      LIFETIMEBAT * 8760) + OPEX_FIXED_BAT) + cap_bat * (
+                      LIFETIMEBAT * 8760) + OPEX_FIXED_BAT) +
+               cap_bat * (
                        CAPEX_VARIABLE_BAT * len(hours_considered) / (LIFETIMEBAT * 8760) + OPEX_VARIABLE_BAT)] +
-              [max_grid_cons * CPOWERGRID])
+              
+'''
 
+'''
+lpSum([flow_vars[arc] * fixed_arc_flow_cost[arc] for arc in fixed_arc_flow_cost] +
+              [non_zero_pv * (CAPEX_FIXED_SOLAR * len(hours_considered) * resolution / (LIFETIMESOLAR * 8760) +
+                              OPEXFIXEDSOLAR) + prated_solar * (
+                      CAPEX_VARIABLE_SOLAR * len(hours_considered) * resolution / (LIFETIMESOLAR * 8760) +
+                      OPEXVARIABLESOLAR)] +
+              [non_zero_bat * ((CAPEX_FIXED_BAT * len(hours_considered) * resolution) / (LIFETIMEBAT * 8760) +
+                               OPEX_FIXED_BAT) + cap_bat * (
+                       CAPEX_VARIABLE_BAT * len(hours_considered) * resolution / (LIFETIMEBAT * 8760) +
+                       OPEX_VARIABLE_BAT)] +
+              [max_grid_cons * CPOWERGRID])
+'''
 # fixed investment costs if there is >0 kWp installed
 (fixed_mins, fixed_maxs) = splitDict(fixed_flow_bounds)
 for arc_key in fixed_flow_bounds:
@@ -243,17 +259,47 @@ for n in bat_cons_nodes:
     prob += lpSum(flow_vars[ingoing] * ETADISCHARGEBAT for ingoing in G.in_edges(n)) == \
             lpSum(flow_vars[outgoing] for outgoing in G.out_edges(n))
 
-print('--- %s seconds --- to add constraints' %
-      (time.time() - start_time_constraints))
+courbe_tendance_dict = {'variable_investment_cost_solar': [],
+                        'battery_capacity': [],
+                        'rated_power': [],
+                        'total_cost': []}
 
-start_time = time.time()  # start counting
-if optimize_with_gurobi:
-    prob.solve(GUROBI())
-else:
-    prob.solve()
+for capex_var_solar in [700,1100,1200,1300,1600]:
+    CAPEX_VARIABLE_SOLAR = capex_var_solar
+    # Creates the objective function
+    prob += lpSum([flow_vars[arc] * fixed_arc_flow_cost[arc] for arc in fixed_arc_flow_cost] +
+                  [non_zero_pv * (CAPEX_FIXED_SOLAR / LIFETIMESOLAR +
+                                  OPEXFIXEDSOLAR) +
+                   prated_solar * (
+                           CAPEX_VARIABLE_SOLAR / LIFETIMESOLAR +
+                           OPEXVARIABLESOLAR)] +
+                  [non_zero_bat * (CAPEX_FIXED_BAT / LIFETIMEBAT +
+                                   OPEX_FIXED_BAT) +
+                   cap_bat * (
+                           CAPEX_VARIABLE_BAT / LIFETIMEBAT +
+                           OPEX_VARIABLE_BAT)] +
+                  [max_grid_cons * CPOWERGRID])
 
-time_to_solve = time.time() - start_time
-print('--- %s seconds --- to solve' % time_to_solve)
+    print('--- %s seconds --- to add constraints' %
+          (time.time() - start_time_constraints))
+
+    start_time = time.time()  # start counting
+    if optimize_with_gurobi:
+        prob.solve(GUROBI())
+    else:
+        prob.solve()
+
+    time_to_solve = time.time() - start_time
+    print('--- %s seconds --- to solve' % time_to_solve)
+    print('CAPEX_VARIABLE_BAT = ',CAPEX_VARIABLE_BAT)
+    print('CAPEX_VARIABLE_SOLAR = ', CAPEX_VARIABLE_SOLAR)
+    print('optimized battery capacity: ', cap_bat.varValue, ' kWh')
+    print('Rated power of installation = ', prated_solar.varValue, ' kWp')
+    print('total cost of microgrid = ', value(prob.objective))
+    courbe_tendance_dict['variable_investment_cost_solar'] += [capex_var_solar]
+    courbe_tendance_dict['battery_capacity'] += [cap_bat.varValue]
+    courbe_tendance_dict['rated_power'] += [prated_solar.varValue]
+    courbe_tendance_dict['total_cost'] += [value(prob.objective)]
 
 if LpStatus[prob.status] == 'Optimal' and create_lp_file_if_feasible_and_less_than_49_hours and NUMBER_OF_HOURS < 49:
     now = datetime.now()
@@ -284,7 +330,7 @@ for c in m.getConstrs():
         print('%s' % c.constrName)
 '''
 
-sub_interval = range(end_hour - 96, end_hour - 48)
+sub_interval = range(2673, 2673 + 48)
 hours_considered_set = set(hours_considered)
 interval = list(hours_considered_set.intersection(sub_interval))
 interval_indices = range(len(sub_interval))
@@ -397,6 +443,11 @@ if create_log_file:
         # with open(path+'/data.csv', 'w', newline='') as myfile:
         #    wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
         #    wr.writerow(mylist)
+    if create_tendance:
+        with open(path + '/tendance.csv', 'w') as outfile:
+            writer = csv.writer(outfile)
+            writer.writerow(courbe_tendance_dict.keys())
+            writer.writerows(zip(*courbe_tendance_dict.values()))
     if create_graphml_obj == 1:
         name = 'graph_' + str(start_hour) + '_' + str(end_hour - 1) + '.graphml'
         nx.write_graphml(G, path + '/' + name)
@@ -422,7 +473,7 @@ if create_log_file:
     string_tmp += 'total cost: ' + str(value(prob.objective))[0:12] + ' CHF\n'
     string_tmp += 'total cost if we only bought from the grid: ' + str(sum(
         [C_ENERGY_GRID[hour] * PCONS[hour] for hour in
-         hours_considered_indices]) + max_grid_cons.varValue * CPOWERGRID) + ' CHF\n'
+         hours_considered_indices]) + PCONSMAX * CPOWERGRID) + ' CHF\n'
     string_tmp += 'max power taken from the grid: ' + str(max_grid_cons.varValue) + ' kW (at a cost of ' + str(
         CPOWERGRID) + ' CHF/kW)\n'
     string_tmp += 'max power taken from grid without microgrid (max consumption):' + str(PCONSMAX) + 'kW\n'

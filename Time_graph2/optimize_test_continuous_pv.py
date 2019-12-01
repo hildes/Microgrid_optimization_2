@@ -132,11 +132,19 @@ CCHARGE_MAX_EV = constants['CCHARGE_MAX_EV'][0]
 CDISCHARGE_MAX_EV = constants['CDISCHARGE_MAX_EV'][0]
 
 WEEK_DAY_PRESENCE = np.concatenate([np.full(7, 1), np.full(12, 0), np.full(5, 1)])
+MINIMAL_CHARGE_WEEK_DAY = np.concatenate([np.full(7, 15), np.full(12, 0), np.full(5, 15)])
 WEEKEND_DAY_PRESENCE = np.concatenate([np.full(9, 1), np.full(3, 0), np.full(2, 1), np.full(6, 0), np.full(4, 1)])
+MINIMAL_CHARGE_WEEKEND_DAY = np.concatenate(
+    [np.full(9, 15), np.full(3, 0), np.full(2, 10), np.full(6, 0), np.full(4, 15)])
 
 HOURLY_PRESENCE_WEEK = np.concatenate([np.tile(WEEK_DAY_PRESENCE, 5), np.tile(WEEKEND_DAY_PRESENCE, 2)])
-HOURLY_PRESENCE_YEAR = np.concatenate([np.tile(HOURLY_PRESENCE_WEEK, 52), np.tile(WEEK_DAY_PRESENCE, 1)])  # a year has
+HOURLY_MINIMAL_CHARGE_WEEK = np.concatenate(
+    [np.tile(MINIMAL_CHARGE_WEEK_DAY, 5), np.tile(MINIMAL_CHARGE_WEEKEND_DAY, 2)])
+HOURLY_PRESENCE_YEAR = np.concatenate([np.tile(HOURLY_PRESENCE_WEEK, 52), np.tile(WEEK_DAY_PRESENCE, 1)])
+HOURLY_MINIMAL_CHARGE_YEAR = np.concatenate(
+    [np.tile(HOURLY_MINIMAL_CHARGE_WEEK, 52), np.tile(MINIMAL_CHARGE_WEEK_DAY, 1)])  # a year has
 # exactly (not really) 52 weeks and 1 day (365 - 7*52 = 1)
+
 HOURLY_PRESENCE_YEAR_INDICES = []
 for i in range(end_hour):
     if HOURLY_PRESENCE_YEAR[i] == 1:
@@ -146,18 +154,16 @@ LEAVING_THE_GARAGE_HOURS_INDICES = []
 ENTERING_THE_GARAGE_HOURS_BOOL = np.full(8760, 0)
 ENTERING_THE_GARAGE_HOURS_INDICES = []
 for i in range(end_hour - 1):
-    if HOURLY_PRESENCE_YEAR[i] == 1 and HOURLY_PRESENCE_YEAR[i + 1] == 0:  # change to have proportional to time spent
-        # in
+    if HOURLY_PRESENCE_YEAR[i] == 1 and HOURLY_PRESENCE_YEAR[i + 1] == 0:
         LEAVING_THE_GARAGE_HOURS_BOOL[i] = 1
         LEAVING_THE_GARAGE_HOURS_INDICES += [i]
-    if HOURLY_PRESENCE_YEAR[i] == 0 and HOURLY_PRESENCE_YEAR[i + 1] == 1:  # change to have proportional to time spent
-        # out
+    if HOURLY_PRESENCE_YEAR[i] == 0 and HOURLY_PRESENCE_YEAR[i + 1] == 1:
         ENTERING_THE_GARAGE_HOURS_BOOL[i] = 1
         ENTERING_THE_GARAGE_HOURS_INDICES += [i]
-ev_ev_edge_indices = np.full(8759, 1)
+ev_ev_edge_indices_bool = np.full(8759, 1)  # todo: come up with better way to manage ev_ev edges
 for i in range(end_hour - 1):
     if HOURLY_PRESENCE_YEAR[i] + HOURLY_PRESENCE_YEAR[i + 1] < 2:
-        ev_ev_edge_indices[i] = 0
+        ev_ev_edge_indices_bool[i] = 0
 
 start_time_graph = time.time()  # start counting
 
@@ -188,7 +194,8 @@ bat_cons_cons_edges = [(bat_cons_nodes[hour], consumption_nodes[hour]) for hour 
 bat_bat_edges = [(battery_nodes[i], battery_nodes[i + 1]) for i in range(NUMBER_OF_HOURS)[:-1]]
 cons_supersink_edges = [(consumption_nodes[hour], 'supersink') for hour in range(NUMBER_OF_HOURS)]
 pv_supersink_edges = [(pv_nodes[hour], 'supersink') for hour in range(NUMBER_OF_HOURS)]
-ev_ev_edges = [(ev_nodes[i], ev_nodes[i + 1]) for i in ev_ev_edge_indices]
+ev_ev_edges = [(ev_nodes[i], ev_nodes[i + 1]) for i in range(sum(ev_ev_edge_indices_bool))]  # indices generally are of
+# the form 0,1,2,3... even if in reality they are 0,1,4,5,12,13,15...
 ev_ev_cons_edges = [(ev_nodes[hour], ev_cons_nodes[hour]) for hour in range(len(HOURLY_PRESENCE_YEAR_INDICES))]
 ev_cons_cons_edges = [(ev_cons_nodes[hour], consumption_nodes[hour]) for hour in
                       range(len(HOURLY_PRESENCE_YEAR_INDICES))]
@@ -223,7 +230,6 @@ for e in pv_supersink_edges:
 
 for e in grid_ev_edges:
     fixed_arc_flow_cost[e] = C_ENERGY_GRID[node_hour(e[1]) - start_hour]
-
 
 start_time_constraints = time.time()  # start counting
 
@@ -262,6 +268,7 @@ for e in supersource_cons_edges:  # max power cost
     prob += flow_vars[e] <= max_grid_cons
 for e in ev_ev_edges:
     prob += flow_vars[e] <= CAP_BAT_EV
+    prob += flow_vars[e] >= HOURLY_MINIMAL_CHARGE_YEAR[node_hour(e[0])]  # todo: make sure this is correct
 for e in ev_ev_cons_edges:
     prob += flow_vars[e] <= CDISCHARGE_MAX_EV * CAP_BAT_EV, 'EV discharging rate' + str(node_hour(e[0]))
 for e in grid_ev_edges:
@@ -379,7 +386,7 @@ data_dict['consumption_data'] = consumption_data
 data_dict['normalized_pv'] = pv_data
 data_dict['EV_presence'] = HOURLY_PRESENCE_YEAR
 ev_ev = np.full(end_hour, 0)
-for i in ev_ev_edge_indices:
+for i in range(sum(ev_ev_edge_indices_bool)):
     ev_ev[i] = flow_vars[ev_ev_edges[i]].varValue
 data_dict['ev_ev'] = ev_ev
 ev_cons = np.full(end_hour, 0)
@@ -491,8 +498,9 @@ if create_log_file:
     string_tmp += 'optimized rated power of installation = ' + str(prated_solar.varValue) + ' kWp\n'
     string_tmp += 'optimized battery capacity: ' + str(cap_bat.varValue) + ' kWh \n'
     string_tmp += 'total cost: ' + str(value(prob.objective))[0:12] + ' CHF\n'
-    # string_tmp += 'total cost if we only bought from the grid: ' + str(sum([C_ENERGY_GRID[hour] * PCONS[hour] for hour in
-    #                                                                        hours_considered_indices]) + max_grid_cons.varValue * C_POWER_GRID) + ' CHF\n'
+    string_tmp += 'total cost if we only bought from the grid: ' + \
+                  str(sum([(C_ENERGY_GRID[hour] + HOURLY_MINIMAL_CHARGE_YEAR[hour]) * PCONS[hour] for hour in
+                           hours_considered_indices]) + P_CONS_MAX * C_POWER_GRID) + ' CHF\n'
     string_tmp += 'max power taken from the grid: ' + str(max_grid_cons.varValue) + ' kW (at a cost of ' + str(
         C_POWER_GRID) + ' CHF/kW)\n'
     string_tmp += 'max power taken from grid without microgrid (max consumption): ' + str(P_CONS_MAX) + 'kW\n'
