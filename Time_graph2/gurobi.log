@@ -30012,3 +30012,795 @@ Solution count 2: 5597.04 5618.99
 
 Optimal solution found (tolerance 1.00e-04)
 Best objective 5.597042482220e+03, best bound 5.597042482220e+03, gap 0.0000%
+
+Gurobi 8.1.1 (mac64, Python) logging started Sun Dec  1 16:48:37 2019
+
+Academic license - for non-commercial use only
+Optimize a model with 87603 rows, 87605 columns and 232167 nonzeros
+Variable types: 87603 continuous, 2 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [5e-04, 1e+03]
+  Objective range  [5e-02, 4e+02]
+  Bounds range     [3e-01, 1e+05]
+  RHS range        [0e+00, 0e+00]
+Presolve removed 37905 rows and 51683 columns
+Presolve time: 0.47s
+Presolved: 49698 rows, 35922 columns, 139405 nonzeros
+Variable types: 35920 continuous, 2 integer (2 binary)
+
+Deterministic concurrent LP optimizer: primal and dual simplex
+Showing first log only...
+
+
+Root simplex log...
+
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+   33367    2.2987738e+03   0.000000e+00   8.105155e+02      5s
+   36867    2.1605583e+03   0.000000e+00   1.344227e+02     10s
+Concurrent spin time: 0.00s
+
+Solved with dual simplex
+
+Root relaxation: objective 2.108540e+03, 42181 iterations, 10.98 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 2108.54033    0    2          - 2108.54033      -     -   11s
+     0     0 2108.54033    0    2          - 2108.54033      -     -   11s
+     0     2 2108.54033    0    2          - 2108.54033      -     -   11s
+*    3     2               2    2302.5913941 2121.56540  7.86%  1654   14s
+*    4     2               2    2231.7383102 2231.73831  0.00%  2683   14s
+
+Explored 5 nodes (52912 simplex iterations) in 14.70 seconds
+Thread count was 4 (of 4 available processors)
+
+Solution count 2: 2231.74 2302.59 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 2.231738310233e+03, best bound 2.231738310233e+03, gap 0.0000%
+Optimize a model with 87603 rows, 87605 columns and 232167 nonzeros
+Variable types: 87603 continuous, 2 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [5e-04, 1e+03]
+  Objective range  [5e-02, 4e+02]
+  Bounds range     [3e-01, 1e+05]
+  RHS range        [0e+00, 0e+00]
+Presolve removed 37905 rows and 51683 columns
+Presolve time: 0.52s
+Presolved: 49698 rows, 35922 columns, 139405 nonzeros
+Variable types: 35920 continuous, 2 integer (2 binary)
+
+Deterministic concurrent LP optimizer: primal and dual simplex
+Showing first log only...
+
+
+Root simplex log...
+
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+   33437    2.6678464e+03   0.000000e+00   1.129992e+03      5s
+   35517    2.4627880e+03   0.000000e+00   6.381164e+02     10s
+Concurrent spin time: 0.01s
+
+Solved with dual simplex
+
+Root relaxation: objective 2.226318e+03, 32809 iterations, 14.42 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 2226.31833    0    2          - 2226.31833      -     -   15s
+     0     0 2226.31833    0    2          - 2226.31833      -     -   15s
+     0     2 2226.31833    0    2          - 2226.31833      -     -   15s
+*    3     3               2    2523.0451447 2293.53487  9.10%  3162   20s
+
+Explored 4 nodes (42295 simplex iterations) in 20.42 seconds
+Thread count was 4 (of 4 available processors)
+
+Solution count 1: 2523.05 
+
+Solve interrupted
+Best objective 2.523045144731e+03, best bound 2.293534874123e+03, gap 9.0966%
+
+Gurobi 8.1.1 (mac64, Python) logging started Sun Dec  1 16:50:40 2019
+
+Academic license - for non-commercial use only
+Optimize a model with 43803 rows, 43805 columns and 116359 nonzeros
+Variable types: 43803 continuous, 2 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [3e-04, 6e+02]
+  Objective range  [1e-01, 4e+02]
+  Bounds range     [3e-01, 1e+05]
+  RHS range        [0e+00, 0e+00]
+Presolve removed 17650 rows and 24794 columns
+Presolve time: 0.25s
+Presolved: 26153 rows, 19011 columns, 73425 nonzeros
+Variable types: 19009 continuous, 2 integer (2 binary)
+
+Root relaxation: objective 1.962202e+03, 16369 iterations, 2.69 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 1962.20164    0    1          - 1962.20164      -     -    3s
+     0     0 1962.20164    0    1          - 1962.20164      -     -    3s
+     0     2 1962.20164    0    1          - 1962.20164      -     -    3s
+*    1     0               1    2360.7120000 1962.50114  16.9%   0.0    3s
+*    2     0               1    2245.1591303 2245.15913  0.00%  1198    3s
+
+Explored 3 nodes (18766 simplex iterations) in 3.37 seconds
+Thread count was 4 (of 4 available processors)
+
+Solution count 2: 2245.16 2360.71 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 2.245159130276e+03, best bound 2.245159130276e+03, gap 0.0000%
+
+Gurobi 8.1.1 (mac64, Python) logging started Sun Dec  1 16:57:18 2019
+
+Academic license - for non-commercial use only
+Optimize a model with 43803 rows, 43805 columns and 116249 nonzeros
+Variable types: 43803 continuous, 2 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [2e-04, 5e+02]
+  Objective range  [1e-01, 4e+02]
+  Bounds range     [3e-01, 1e+05]
+  RHS range        [0e+00, 0e+00]
+Presolve removed 18199 rows and 25378 columns
+Presolve time: 0.42s
+Presolved: 25604 rows, 18427 columns, 72276 nonzeros
+Variable types: 18425 continuous, 2 integer (2 binary)
+
+Root relaxation: objective 2.025004e+03, 17937 iterations, 2.40 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 2025.00412    0    2          - 2025.00412      -     -    2s
+     0     0 2025.00412    0    2          - 2025.00412      -     -    2s
+     0     2 2025.00412    0    2          - 2025.00412      -     -    3s
+*    3     2               2    2412.2039656 2081.43157  13.7%  1851    5s
+*    4     2               2    2289.5416977 2289.54170  0.00%  2353    5s
+
+Explored 5 nodes (27350 simplex iterations) in 5.14 seconds
+Thread count was 4 (of 4 available processors)
+
+Solution count 2: 2289.54 2412.2 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 2.289541697682e+03, best bound 2.289541697682e+03, gap 0.0000%
+
+Gurobi 8.1.1 (mac64, Python) logging started Sun Dec  1 16:58:07 2019
+
+Academic license - for non-commercial use only
+Optimize a model with 87603 rows, 87605 columns and 232167 nonzeros
+Variable types: 87603 continuous, 2 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [5e-04, 1e+03]
+  Objective range  [5e-02, 4e+02]
+  Bounds range     [3e-01, 1e+05]
+  RHS range        [0e+00, 0e+00]
+Presolve removed 37905 rows and 51683 columns
+Presolve time: 0.51s
+Presolved: 49698 rows, 35922 columns, 139405 nonzeros
+Variable types: 35920 continuous, 2 integer (2 binary)
+
+Deterministic concurrent LP optimizer: primal and dual simplex
+Showing first log only...
+
+
+Root simplex log...
+
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+   32117    2.8747878e+03   0.000000e+00   1.324713e+04      5s
+   34927    2.5982443e+03   0.000000e+00   4.633349e+03     10s
+   38167    2.5004091e+03   0.000000e+00   1.128878e+03     15s
+Concurrent spin time: 0.01s
+
+Solved with dual simplex
+
+Root relaxation: objective 2.247814e+03, 35586 iterations, 16.08 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 2247.81375    0    2          - 2247.81375      -     -   16s
+     0     0 2247.81375    0    2          - 2247.81375      -     -   16s
+     0     2 2247.81375    0    2          - 2247.81375      -     -   16s
+*    3     2               2    2555.3487231 2323.43349  9.08%  3236   18s
+
+Explored 5 nodes (51349 simplex iterations) in 18.91 seconds
+Thread count was 4 (of 4 available processors)
+
+Solution count 1: 2555.35 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 2.555348723115e+03, best bound 2.555348723115e+03, gap 0.0000%
+
+Gurobi 8.1.1 (mac64, Python) logging started Sun Dec  1 16:58:44 2019
+
+Academic license - for non-commercial use only
+Optimize a model with 58403 rows, 58405 columns and 155067 nonzeros
+Variable types: 58403 continuous, 2 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [2e-04, 7e+02]
+  Objective range  [8e-02, 4e+02]
+  Bounds range     [3e-01, 1e+05]
+  RHS range        [0e+00, 0e+00]
+Presolve removed 23876 rows and 33446 columns
+Presolve time: 0.32s
+Presolved: 34527 rows, 24959 columns, 97049 nonzeros
+Variable types: 24957 continuous, 2 integer (2 binary)
+
+Root simplex log...
+
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+   18814    2.0537179e+03   6.051834e+02   0.000000e+00      5s
+   24196    2.1256243e+03   0.000000e+00   0.000000e+00      6s
+
+Root relaxation: objective 2.125624e+03, 24196 iterations, 5.36 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 2125.62432    0    2          - 2125.62432      -     -    5s
+     0     0 2125.62432    0    2          - 2125.62432      -     -    5s
+     0     2 2125.62432    0    2          - 2125.62432      -     -    5s
+*    3     2               2    2455.1309702 2176.64401  11.3%  1717    6s
+*    4     2               2    2389.9055757 2389.90558  0.00%  2802    6s
+
+Explored 5 nodes (35406 simplex iterations) in 6.99 seconds
+Thread count was 4 (of 4 available processors)
+
+Solution count 2: 2389.91 2455.13 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 2.389905575652e+03, best bound 2.389905575652e+03, gap 0.0000%
+
+Gurobi 8.1.1 (mac64, Python) logging started Sun Dec  1 16:59:11 2019
+
+Academic license - for non-commercial use only
+Optimize a model with 43803 rows, 43805 columns and 116249 nonzeros
+Variable types: 43803 continuous, 2 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [2e-04, 5e+02]
+  Objective range  [1e-01, 4e+02]
+  Bounds range     [3e-01, 1e+05]
+  RHS range        [0e+00, 0e+00]
+Presolve removed 18199 rows and 25378 columns
+Presolve time: 0.23s
+Presolved: 25604 rows, 18427 columns, 72276 nonzeros
+Variable types: 18425 continuous, 2 integer (2 binary)
+
+Root relaxation: objective 2.025004e+03, 17937 iterations, 1.50 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 2025.00412    0    2          - 2025.00412      -     -    1s
+     0     0 2025.00412    0    2          - 2025.00412      -     -    1s
+     0     2 2025.00412    0    2          - 2025.00412      -     -    1s
+*    3     2               2    2412.2039656 2081.43157  13.7%  1851    3s
+*    4     2               2    2289.5416977 2289.54170  0.00%  2353    3s
+
+Explored 5 nodes (27350 simplex iterations) in 3.29 seconds
+Thread count was 4 (of 4 available processors)
+
+Solution count 2: 2289.54 2412.2 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 2.289541697682e+03, best bound 2.289541697682e+03, gap 0.0000%
+
+Gurobi 8.1.1 (mac64, Python) logging started Sun Dec  1 16:59:40 2019
+
+Academic license - for non-commercial use only
+Optimize a model with 35043 rows, 35045 columns and 92811 nonzeros
+Variable types: 35043 continuous, 2 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [2e-04, 2e+02]
+  Objective range  [1e-01, 4e+02]
+  Bounds range     [4e-01, 1e+05]
+  RHS range        [0e+00, 0e+00]
+Presolve removed 14871 rows and 20876 columns
+Presolve time: 0.16s
+Presolved: 20172 rows, 14169 columns, 55282 nonzeros
+Variable types: 14167 continuous, 2 integer (2 binary)
+
+Root relaxation: objective 2.282196e+03, 13275 iterations, 1.73 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 2282.19644    0    1          - 2282.19644      -     -    1s
+     0     0 2282.19644    0    1          - 2282.19644      -     -    1s
+     0     2 2282.19644    0    1          - 2282.19644      -     -    1s
+*    1     2               1    2390.3920000 2282.76879  4.50%   0.0    2s
+
+Explored 3 nodes (15610 simplex iterations) in 2.24 seconds
+Thread count was 4 (of 4 available processors)
+
+Solution count 1: 2390.39 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 2.390392000000e+03, best bound 2.390392000000e+03, gap 0.0000%
+
+Gurobi 8.1.1 (mac64, Python) logging started Sun Dec  1 17:00:00 2019
+
+Academic license - for non-commercial use only
+Optimize a model with 29203 rows, 29205 columns and 77691 nonzeros
+Variable types: 29203 continuous, 2 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [2e-04, 4e+02]
+  Objective range  [2e-01, 4e+02]
+  Bounds range     [4e-01, 1e+05]
+  RHS range        [0e+00, 0e+00]
+Presolve removed 11274 rows and 16288 columns
+Presolve time: 0.19s
+Presolved: 17929 rows, 12917 columns, 50738 nonzeros
+Variable types: 12915 continuous, 2 integer (2 binary)
+
+Root relaxation: objective 1.826929e+03, 13266 iterations, 1.79 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 1826.92923    0    2          - 1826.92923      -     -    2s
+     0     0 1826.92923    0    2          - 1826.92923      -     -    2s
+     0     2 1826.92923    0    2          - 1826.92923      -     -    2s
+*    1     2               1    2351.6549333 1827.46448  22.3%   0.0    2s
+*    3     0               2    2151.1574207 1951.63841  9.27%   990    2s
+
+Explored 5 nodes (17226 simplex iterations) in 2.38 seconds
+Thread count was 4 (of 4 available processors)
+
+Solution count 2: 2151.16 2351.65 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 2.151157420711e+03, best bound 2.151157420711e+03, gap 0.0000%
+
+Gurobi 8.1.1 (mac64, Python) logging started Sun Dec  1 17:02:25 2019
+
+Academic license - for non-commercial use only
+Optimize a model with 87603 rows, 87605 columns and 232167 nonzeros
+Variable types: 87603 continuous, 2 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [5e-04, 1e+03]
+  Objective range  [5e-02, 4e+02]
+  Bounds range     [3e-01, 1e+05]
+  RHS range        [0e+00, 0e+00]
+Presolve removed 37905 rows and 51683 columns
+Presolve time: 0.53s
+Presolved: 49698 rows, 35922 columns, 139405 nonzeros
+Variable types: 35920 continuous, 2 integer (2 binary)
+
+Deterministic concurrent LP optimizer: primal and dual simplex
+Showing first log only...
+
+
+Root simplex log...
+
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+   31907    2.8808521e+03   0.000000e+00   2.685779e+03      5s
+   34197    2.6632554e+03   0.000000e+00   1.590022e+03     10s
+   36997    2.5352624e+03   0.000000e+00   4.230921e+03     15s
+Concurrent spin time: 0.00s
+
+Solved with dual simplex
+
+Root relaxation: objective 2.247814e+03, 35586 iterations, 18.51 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 2247.81375    0    2          - 2247.81375      -     -   19s
+     0     0 2247.81375    0    2          - 2247.81375      -     -   19s
+     0     2 2247.81375    0    2          - 2247.81375      -     -   19s
+     1     4 2251.52588    1    1          - 2248.34856      -   594   20s
+*    3     2               2    2555.3487231 2323.43349  9.08%  3236   21s
+
+Explored 5 nodes (51349 simplex iterations) in 21.63 seconds
+Thread count was 4 (of 4 available processors)
+
+Solution count 1: 2555.35 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 2.555348723115e+03, best bound 2.555348723115e+03, gap 0.0000%
+
+Gurobi 8.1.1 (mac64, Python) logging started Sun Dec  1 17:03:08 2019
+
+Academic license - for non-commercial use only
+Optimize a model with 58403 rows, 58405 columns and 155067 nonzeros
+Variable types: 58403 continuous, 2 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [2e-04, 7e+02]
+  Objective range  [8e-02, 4e+02]
+  Bounds range     [3e-01, 1e+05]
+  RHS range        [0e+00, 0e+00]
+Presolve removed 23876 rows and 33446 columns
+Presolve time: 0.37s
+Presolved: 34527 rows, 24959 columns, 97049 nonzeros
+Variable types: 24957 continuous, 2 integer (2 binary)
+
+Root simplex log...
+
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+   14058    1.9163699e+03   3.941102e+03   0.000000e+00      5s
+   24196    2.1256243e+03   0.000000e+00   0.000000e+00      7s
+
+Root relaxation: objective 2.125624e+03, 24196 iterations, 6.31 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 2125.62432    0    2          - 2125.62432      -     -    6s
+     0     0 2125.62432    0    2          - 2125.62432      -     -    6s
+     0     2 2125.62432    0    2          - 2125.62432      -     -    6s
+*    3     2               2    2455.1309702 2176.64401  11.3%  1717    8s
+*    4     2               2    2389.9055757 2389.90558  0.00%  2802    8s
+
+Explored 5 nodes (35406 simplex iterations) in 8.42 seconds
+Thread count was 4 (of 4 available processors)
+
+Solution count 2: 2389.91 2455.13 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 2.389905575652e+03, best bound 2.389905575652e+03, gap 0.0000%
+
+Gurobi 8.1.1 (mac64, Python) logging started Sun Dec  1 17:03:59 2019
+
+Academic license - for non-commercial use only
+Optimize a model with 43803 rows, 43805 columns and 116249 nonzeros
+Variable types: 43803 continuous, 2 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [2e-04, 5e+02]
+  Objective range  [1e-01, 4e+02]
+  Bounds range     [3e-01, 1e+05]
+  RHS range        [0e+00, 0e+00]
+Presolve removed 18199 rows and 25378 columns
+Presolve time: 0.25s
+Presolved: 25604 rows, 18427 columns, 72276 nonzeros
+Variable types: 18425 continuous, 2 integer (2 binary)
+
+Root relaxation: objective 2.025004e+03, 17937 iterations, 1.97 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 2025.00412    0    2          - 2025.00412      -     -    2s
+     0     0 2025.00412    0    2          - 2025.00412      -     -    2s
+     0     2 2025.00412    0    2          - 2025.00412      -     -    2s
+*    3     2               2    2412.2039656 2081.43157  13.7%  1851    4s
+*    4     2               2    2289.5416977 2289.54170  0.00%  2353    4s
+
+Explored 5 nodes (27350 simplex iterations) in 4.02 seconds
+Thread count was 4 (of 4 available processors)
+
+Solution count 2: 2289.54 2412.2 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 2.289541697682e+03, best bound 2.289541697682e+03, gap 0.0000%
+
+Gurobi 8.1.1 (mac64, Python) logging started Sun Dec  1 17:04:20 2019
+
+Academic license - for non-commercial use only
+Optimize a model with 35043 rows, 35045 columns and 93161 nonzeros
+Variable types: 35043 continuous, 2 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [2e-04, 4e+02]
+  Objective range  [1e-01, 4e+02]
+  Bounds range     [4e-01, 1e+05]
+  RHS range        [0e+00, 0e+00]
+Presolve removed 13781 rows and 19702 columns
+Presolve time: 0.22s
+Presolved: 21262 rows, 15343 columns, 59894 nonzeros
+Variable types: 15341 continuous, 2 integer (2 binary)
+
+Root relaxation: objective 1.918448e+03, 15858 iterations, 1.62 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 1918.44807    0    2          - 1918.44807      -     -    1s
+     0     0 1918.44807    0    2          - 1918.44807      -     -    1s
+     0     2 1918.44807    0    2          - 1918.44807      -     -    1s
+*    3     2               2    2336.7432429 2005.26613  14.2%  1007    2s
+*    4     2               2    2208.0580630 2208.05806  0.00%  1285    2s
+
+Explored 5 nodes (20997 simplex iterations) in 2.39 seconds
+Thread count was 4 (of 4 available processors)
+
+Solution count 2: 2208.06 2336.74 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 2.208058063009e+03, best bound 2.208058063009e+03, gap 0.0000%
+
+Gurobi 8.1.1 (mac64, Python) logging started Sun Dec  1 17:04:41 2019
+
+Academic license - for non-commercial use only
+Optimize a model with 29203 rows, 29205 columns and 77691 nonzeros
+Variable types: 29203 continuous, 2 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [2e-04, 4e+02]
+  Objective range  [2e-01, 4e+02]
+  Bounds range     [4e-01, 1e+05]
+  RHS range        [0e+00, 0e+00]
+Presolve removed 11274 rows and 16288 columns
+Presolve time: 0.18s
+Presolved: 17929 rows, 12917 columns, 50738 nonzeros
+Variable types: 12915 continuous, 2 integer (2 binary)
+
+Root relaxation: objective 1.826929e+03, 13266 iterations, 1.72 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 1826.92923    0    2          - 1826.92923      -     -    1s
+     0     0 1826.92923    0    2          - 1826.92923      -     -    1s
+     0     2 1826.92923    0    2          - 1826.92923      -     -    1s
+*    1     2               1    2351.6549333 1827.46448  22.3%   0.0    2s
+*    3     0               2    2151.1574207 1951.63841  9.27%   990    2s
+
+Explored 5 nodes (17226 simplex iterations) in 2.32 seconds
+Thread count was 4 (of 4 available processors)
+
+Solution count 2: 2151.16 2351.65 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 2.151157420711e+03, best bound 2.151157420711e+03, gap 0.0000%
+
+Gurobi 8.1.1 (mac64, Python) logging started Sun Dec  1 17:04:57 2019
+
+Academic license - for non-commercial use only
+Optimize a model with 21903 rows, 21905 columns and 58263 nonzeros
+Variable types: 21903 continuous, 2 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [2e-04, 3e+02]
+  Objective range  [2e-01, 4e+02]
+  Bounds range     [4e-01, 1e+05]
+  RHS range        [0e+00, 0e+00]
+Presolve removed 8602 rows and 12247 columns
+Presolve time: 0.12s
+Presolved: 13301 rows, 9658 columns, 37708 nonzeros
+Variable types: 9656 continuous, 2 integer (2 binary)
+
+Root relaxation: objective 1.741065e+03, 8576 iterations, 0.99 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 1741.06520    0    2          - 1741.06520      -     -    1s
+     0     0 1741.06520    0    2          - 1741.06520      -     -    1s
+     0     2 1741.06520    0    2          - 1741.06520      -     -    1s
+*    1     2               1    2333.9072000 1744.06875  25.3%   0.0    1s
+*    3     0               2    2097.5665127 1865.42004  11.1%   625    1s
+
+Explored 5 nodes (11398 simplex iterations) in 1.50 seconds
+Thread count was 4 (of 4 available processors)
+
+Solution count 2: 2097.57 2333.91 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 2.097566512684e+03, best bound 2.097566512684e+03, gap 0.0000%
+
+Gurobi 8.1.1 (mac64, Python) logging started Sun Dec  1 17:18:21 2019
+
+Academic license - for non-commercial use only
+Optimize a model with 87603 rows, 87605 columns and 232167 nonzeros
+Variable types: 87603 continuous, 2 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [5e-04, 1e+03]
+  Objective range  [5e-02, 4e+02]
+  Bounds range     [3e-01, 1e+05]
+  RHS range        [0e+00, 0e+00]
+Presolve removed 37905 rows and 51683 columns
+Presolve time: 0.59s
+Presolved: 49698 rows, 35922 columns, 139405 nonzeros
+Variable types: 35920 continuous, 2 integer (2 binary)
+
+Deterministic concurrent LP optimizer: primal and dual simplex
+Showing first log only...
+
+
+Root simplex log...
+
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+   32527    2.8354858e+03   0.000000e+00   2.399275e+03      5s
+   35127    2.5981923e+03   0.000000e+00   3.723884e+03     10s
+   37557    2.5048735e+03   0.000000e+00   1.131338e+04     15s
+Concurrent spin time: 0.00s
+
+Solved with dual simplex
+
+Root relaxation: objective 2.247814e+03, 35586 iterations, 17.54 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 2247.81375    0    2          - 2247.81375      -     -   18s
+     0     0 2247.81375    0    2          - 2247.81375      -     -   18s
+     0     2 2247.81375    0    2          - 2247.81375      -     -   18s
+*    3     2               2    2555.3487231 2323.43349  9.08%  3236   21s
+
+Explored 5 nodes (51349 simplex iterations) in 21.22 seconds
+Thread count was 4 (of 4 available processors)
+
+Solution count 1: 2555.35 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 2.555348723115e+03, best bound 2.555348723115e+03, gap 0.0000%
+
+Gurobi 8.1.1 (mac64, Python) logging started Sun Dec  1 17:19:02 2019
+
+Academic license - for non-commercial use only
+Optimize a model with 58403 rows, 58405 columns and 155067 nonzeros
+Variable types: 58403 continuous, 2 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [2e-04, 7e+02]
+  Objective range  [8e-02, 4e+02]
+  Bounds range     [3e-01, 1e+05]
+  RHS range        [0e+00, 0e+00]
+Presolve removed 23876 rows and 33446 columns
+Presolve time: 0.33s
+Presolved: 34527 rows, 24959 columns, 97049 nonzeros
+Variable types: 24957 continuous, 2 integer (2 binary)
+
+Root simplex log...
+
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+   15838    2.0028318e+03   1.962736e+04   0.000000e+00      5s
+   24196    2.1256243e+03   0.000000e+00   0.000000e+00      6s
+
+Root relaxation: objective 2.125624e+03, 24196 iterations, 6.10 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 2125.62432    0    2          - 2125.62432      -     -    6s
+     0     0 2125.62432    0    2          - 2125.62432      -     -    6s
+     0     2 2125.62432    0    2          - 2125.62432      -     -    6s
+*    3     2               2    2455.1309702 2176.64401  11.3%  1717    8s
+*    4     2               2    2389.9055757 2389.90558  0.00%  2802    8s
+
+Explored 5 nodes (35406 simplex iterations) in 8.18 seconds
+Thread count was 4 (of 4 available processors)
+
+Solution count 2: 2389.91 2455.13 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 2.389905575652e+03, best bound 2.389905575652e+03, gap 0.0000%
+
+Gurobi 8.1.1 (mac64, Python) logging started Sun Dec  1 17:19:31 2019
+
+Academic license - for non-commercial use only
+Optimize a model with 43803 rows, 43805 columns and 116249 nonzeros
+Variable types: 43803 continuous, 2 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [2e-04, 5e+02]
+  Objective range  [1e-01, 4e+02]
+  Bounds range     [3e-01, 1e+05]
+  RHS range        [0e+00, 0e+00]
+Presolve removed 18199 rows and 25378 columns
+Presolve time: 0.28s
+Presolved: 25604 rows, 18427 columns, 72276 nonzeros
+Variable types: 18425 continuous, 2 integer (2 binary)
+
+Root relaxation: objective 2.025004e+03, 17937 iterations, 1.81 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 2025.00412    0    2          - 2025.00412      -     -    2s
+     0     0 2025.00412    0    2          - 2025.00412      -     -    2s
+     0     2 2025.00412    0    2          - 2025.00412      -     -    2s
+*    3     2               2    2412.2039656 2081.43157  13.7%  1851    3s
+*    4     2               2    2289.5416977 2289.54170  0.00%  2353    3s
+
+Explored 5 nodes (27350 simplex iterations) in 3.88 seconds
+Thread count was 4 (of 4 available processors)
+
+Solution count 2: 2289.54 2412.2 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 2.289541697682e+03, best bound 2.289541697682e+03, gap 0.0000%
+
+Gurobi 8.1.1 (mac64, Python) logging started Sun Dec  1 17:20:15 2019
+
+Academic license - for non-commercial use only
+Optimize a model with 35043 rows, 35045 columns and 93161 nonzeros
+Variable types: 35043 continuous, 2 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [2e-04, 4e+02]
+  Objective range  [1e-01, 4e+02]
+  Bounds range     [4e-01, 1e+05]
+  RHS range        [0e+00, 0e+00]
+Presolve removed 13781 rows and 19702 columns
+Presolve time: 0.23s
+Presolved: 21262 rows, 15343 columns, 59894 nonzeros
+Variable types: 15341 continuous, 2 integer (2 binary)
+
+Root relaxation: objective 1.918448e+03, 15858 iterations, 1.92 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 1918.44807    0    2          - 1918.44807      -     -    2s
+     0     0 1918.44807    0    2          - 1918.44807      -     -    2s
+     0     2 1918.44807    0    2          - 1918.44807      -     -    2s
+*    3     2               2    2336.7432429 2005.26613  14.2%  1007    2s
+*    4     2               2    2208.0580630 2208.05806  0.00%  1285    2s
+
+Explored 5 nodes (20997 simplex iterations) in 2.73 seconds
+Thread count was 4 (of 4 available processors)
+
+Solution count 2: 2208.06 2336.74 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 2.208058063009e+03, best bound 2.208058063009e+03, gap 0.0000%
+
+Gurobi 8.1.1 (mac64, Python) logging started Sun Dec  1 17:20:35 2019
+
+Academic license - for non-commercial use only
+Optimize a model with 29203 rows, 29205 columns and 77691 nonzeros
+Variable types: 29203 continuous, 2 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [2e-04, 4e+02]
+  Objective range  [2e-01, 4e+02]
+  Bounds range     [4e-01, 1e+05]
+  RHS range        [0e+00, 0e+00]
+Presolve removed 11274 rows and 16288 columns
+Presolve time: 0.20s
+Presolved: 17929 rows, 12917 columns, 50738 nonzeros
+Variable types: 12915 continuous, 2 integer (2 binary)
+
+Root relaxation: objective 1.826929e+03, 13266 iterations, 2.00 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 1826.92923    0    2          - 1826.92923      -     -    2s
+     0     0 1826.92923    0    2          - 1826.92923      -     -    2s
+     0     2 1826.92923    0    2          - 1826.92923      -     -    2s
+*    1     2               1    2351.6549333 1827.46448  22.3%   0.0    2s
+*    3     0               2    2151.1574207 1951.63841  9.27%   990    2s
+
+Explored 5 nodes (17226 simplex iterations) in 2.66 seconds
+Thread count was 4 (of 4 available processors)
+
+Solution count 2: 2151.16 2351.65 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 2.151157420711e+03, best bound 2.151157420711e+03, gap 0.0000%
+
+Gurobi 8.1.1 (mac64, Python) logging started Sun Dec  1 17:20:50 2019
+
+Academic license - for non-commercial use only
+Optimize a model with 21903 rows, 21905 columns and 58263 nonzeros
+Variable types: 21903 continuous, 2 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [2e-04, 3e+02]
+  Objective range  [2e-01, 4e+02]
+  Bounds range     [4e-01, 1e+05]
+  RHS range        [0e+00, 0e+00]
+Presolve removed 8602 rows and 12247 columns
+Presolve time: 0.14s
+Presolved: 13301 rows, 9658 columns, 37708 nonzeros
+Variable types: 9656 continuous, 2 integer (2 binary)
+
+Root relaxation: objective 1.741065e+03, 8576 iterations, 1.19 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 1741.06520    0    2          - 1741.06520      -     -    1s
+     0     0 1741.06520    0    2          - 1741.06520      -     -    1s
+     0     2 1741.06520    0    2          - 1741.06520      -     -    1s
+*    1     2               1    2333.9072000 1744.06875  25.3%   0.0    1s
+*    3     0               2    2097.5665127 1865.42004  11.1%   625    1s
+
+Explored 5 nodes (11398 simplex iterations) in 1.78 seconds
+Thread count was 4 (of 4 available processors)
+
+Solution count 2: 2097.57 2333.91 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 2.097566512684e+03, best bound 2.097566512684e+03, gap 0.0000%

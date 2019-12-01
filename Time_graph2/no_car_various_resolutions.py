@@ -20,7 +20,7 @@ create_csv = 1
 create_tendance = 1
 create_plot = 1
 optimize_with_gurobi = 1  # CBC is the default solver used by pulp
-resolution = 1  # can be 1,1.5,2,2.5,3,4
+resolution = 4  # can be 1,1.5,2,2.5,3,4  # todo: resolution of 4/3=1.333, 6/5=1.2
 
 
 def import_planair_data():
@@ -83,41 +83,40 @@ OPEX_FIXED_BAT = constants['OPEX_FIXED_BAT'][0]
 start_hour = 0
 end_hour = int(8760 / resolution)
 hours_considered = range(start_hour, end_hour)
-hours_considered_indices = range(len(hours_considered))
 PCONS = [consumption_data[i] for i in hours_considered]
 PNORMSOLAR = [pv_data[i] for i in hours_considered]
 if resolution == 1.5:
     PCONS = []
     PNORMSOLAR = []
     for i in range(int(8760 / 3)):
-        PCONS += [consumption_data[i] * (2 / 3) + consumption_data[i + 1] * (1 / 3), consumption_data[i + 1] * (1 / 3)
-                  + consumption_data[i + 2] * 2 / 3]
-        PNORMSOLAR += [pv_data[i] * (2 / 3) + pv_data[i + 1] * (1 / 3),
-                       pv_data[i + 1] * (1 / 3) + pv_data[i + 2] * 2 / 3]
+        PCONS += [consumption_data[3 * i] * (2 / 3) + consumption_data[3 * i + 1] * (1 / 3), consumption_data[3 * i + 1] * (1 / 3)
+                  + consumption_data[3 * i + 2] * 2 / 3]
+        PNORMSOLAR += [pv_data[3 * i] * (2 / 3) + pv_data[3 * i + 1] * (1 / 3),
+                       pv_data[3 * i + 1] * (1 / 3) + pv_data[3 * i + 2] * 2 / 3]
 if resolution == 2:
-    PCONS = [(consumption_data[i] + consumption_data[i + 1]) / 2 for i in range(end_hour)]
-    PNORMSOLAR = [(pv_data[i] + pv_data[i + 1]) / 2 for i in range(end_hour)]
+    PCONS = [(consumption_data[2 * i] + consumption_data[2 * i + 1]) / 2 for i in range(end_hour)]
+    PNORMSOLAR = [(pv_data[2 * i] + pv_data[2 * i + 1]) / 2 for i in range(end_hour)]
 if resolution == 2.5:
     PCONS = []
     PNORMSOLAR = []
     for i in range(int(8760 / 5)):
-        PCONS += [consumption_data[i] * (2 / 5) + consumption_data[i + 1] * (2 / 5) + consumption_data[i + 2] * (1 / 5),
-                  consumption_data[i + 2] * (1 / 5)
-                  + consumption_data[i + 3] * 2 / 5 + consumption_data[i + 4] * 2 / 5]
-        PNORMSOLAR += [pv_data[i] * (2 / 5) + pv_data[i + 1] * (2 / 5) + pv_data[i + 2] * (1 / 5),
-                       pv_data[i + 2] * (1 / 5)
-                       + pv_data[i + 3] * 2 / 5 + pv_data[i + 4] * 2 / 5]
+        PCONS += [consumption_data[5 * i] * (2 / 5) + consumption_data[5 * i + 1] * (2 / 5) + consumption_data[5 * i + 2] * (1 / 5),
+                  consumption_data[5 * i + 2] * (1 / 5)
+                  + consumption_data[5 * i + 3] * 2 / 5 + consumption_data[5 * i + 4] * 2 / 5]
+        PNORMSOLAR += [pv_data[5 * i] * (2 / 5) + pv_data[5 * i + 1] * (2 / 5) + pv_data[5 * i + 2] * (1 / 5),
+                       pv_data[5 * i + 2] * (1 / 5)
+                       + pv_data[5 * i + 3] * 2 / 5 + pv_data[5 * i + 4] * 2 / 5]
 if resolution == 3:
-    PCONS = [(consumption_data[i] + consumption_data[i + 1] + consumption_data[i + 2]) / 3 for i in range(end_hour)]
-    PNORMSOLAR = [(pv_data[i] + pv_data[i + 1] + pv_data[i + 2]) / 3 for i in range(end_hour)]
+    PCONS = [(consumption_data[3 * i] + consumption_data[3 * i + 1] + consumption_data[3 * i + 2]) / 3 for i in range(end_hour)]
+    PNORMSOLAR = [(pv_data[3 * i] + pv_data[3 * i + 1] + pv_data[3 * i + 2]) / 3 for i in range(end_hour)]
 if resolution == 4:
-    PCONS = [(consumption_data[i] + consumption_data[i + 1] + consumption_data[i + 2] + consumption_data[i + 3]) / 4
+    PCONS = [(consumption_data[4 * i] + consumption_data[4 * i + 1] + consumption_data[4 * i + 2] + consumption_data[4 * i + 3]) / 4
              for i in range(end_hour)]
-    PNORMSOLAR = [(pv_data[i] + pv_data[i + 1] + pv_data[i + 2] + pv_data[i + 3]) / 4 for i in range(end_hour)]
+    PNORMSOLAR = [(pv_data[4 * i] + pv_data[4 * i + 1] + pv_data[4 * i + 2] + pv_data[4 * i + 3]) / 4 for i in range(end_hour)]
 NUMBER_OF_HOURS = end_hour - start_hour  # len(hours_considered)
 
 PCONS[0] = 0.0  # Otherwise the LP is infeasible !!
-PCONSMAX = max(PCONS)
+P_CONS_MAX = max(PCONS)
 # production curve for installation of 1kW rated power
 
 P_RATED_MIN_SOLAR = constants['P_RATED_MIN_SOLAR'][0]
@@ -159,11 +158,11 @@ supersource_cons_edges = [('supersource', consumption_node)
                           for consumption_node in consumption_nodes]
 supsrcPV_PV_edges = [('supersourcePV', pv_node) for pv_node in pv_nodes]
 supsupsrcPV_supsrcPV_edge = ('supersupersourcePV', 'supersourcePV')
-pv_cons_edges = [(pv_nodes[hour], consumption_nodes[hour]) for hour in hours_considered_indices]
-pv_pv_bat_edges = [(pv_nodes[hour], pv_bat_nodes[hour]) for hour in hours_considered_indices]
-pv_bat_bat_edges = [(pv_bat_nodes[hour], battery_nodes[hour]) for hour in hours_considered_indices]
-bat_bat_cons_edges = [(battery_nodes[hour], bat_cons_nodes[hour]) for hour in hours_considered_indices]
-bat_cons_cons_edges = [(bat_cons_nodes[hour], consumption_nodes[hour]) for hour in hours_considered_indices]
+pv_cons_edges = [(pv_nodes[hour], consumption_nodes[hour]) for hour in range(len(hours_considered))]
+pv_pv_bat_edges = [(pv_nodes[hour], pv_bat_nodes[hour]) for hour in range(len(hours_considered))]
+pv_bat_bat_edges = [(pv_bat_nodes[hour], battery_nodes[hour]) for hour in range(len(hours_considered))]
+bat_bat_cons_edges = [(battery_nodes[hour], bat_cons_nodes[hour]) for hour in range(len(hours_considered))]
+bat_cons_cons_edges = [(bat_cons_nodes[hour], consumption_nodes[hour]) for hour in range(len(hours_considered))]
 bat_bat_edges = [(battery_nodes[i], battery_nodes[i + 1]) for i in range(NUMBER_OF_HOURS)[:-1]]
 cons_supersink_edges = [(consumption_nodes[hour], 'supersink') for hour in range(NUMBER_OF_HOURS)]
 pv_supersink_edges = [(pv_nodes[hour], 'supersink') for hour in range(NUMBER_OF_HOURS)]
@@ -179,10 +178,10 @@ for e in supersource_cons_edges:
     fixed_flow_bounds[e] = [0, PMAXEXTRACTEDGRID]
     fixed_arc_flow_cost[e] = C_ENERGY_GRID[node_hour(e[1]) - start_hour]  # 'supersource','Consumption' + str(hour)
 for e in pv_cons_edges:
-    fixed_flow_bounds[e] = [0, 5 * PCONSMAX + 99999]
+    fixed_flow_bounds[e] = [0, 5 * P_CONS_MAX + 99999]
 for e in cons_supersink_edges:
     fixed_flow_bounds[e] = [PCONS[node_hour(e[0]) - start_hour],
-                            5 * PCONSMAX + 99999]  # upper bound could just be infinity
+                            5 * P_CONS_MAX + 99999]  # upper bound could just be infinity
 for e in pv_supersink_edges:
     fixed_arc_flow_cost[e] = -CINJECTIONGRID[node_hour(e[0]) - start_hour]
     fixed_flow_bounds[e] = [0, PMAXINJECTEDGRID]
@@ -264,42 +263,42 @@ courbe_tendance_dict = {'variable_investment_cost_solar': [],
                         'rated_power': [],
                         'total_cost': []}
 
-for capex_var_solar in [700,1100,1200,1300,1600]:
-    CAPEX_VARIABLE_SOLAR = capex_var_solar
+#for capex_var_solar in [700,1100,1200,1300,1600]:
+#    CAPEX_VARIABLE_SOLAR = capex_var_solar
     # Creates the objective function
-    prob += lpSum([flow_vars[arc] * fixed_arc_flow_cost[arc] for arc in fixed_arc_flow_cost] +
-                  [non_zero_pv * (CAPEX_FIXED_SOLAR / LIFETIMESOLAR +
-                                  OPEXFIXEDSOLAR) +
-                   prated_solar * (
-                           CAPEX_VARIABLE_SOLAR / LIFETIMESOLAR +
-                           OPEXVARIABLESOLAR)] +
-                  [non_zero_bat * (CAPEX_FIXED_BAT / LIFETIMEBAT +
-                                   OPEX_FIXED_BAT) +
-                   cap_bat * (
-                           CAPEX_VARIABLE_BAT / LIFETIMEBAT +
-                           OPEX_VARIABLE_BAT)] +
-                  [max_grid_cons * CPOWERGRID])
+prob += lpSum([flow_vars[arc] * fixed_arc_flow_cost[arc] for arc in fixed_arc_flow_cost] +
+              [non_zero_pv * (CAPEX_FIXED_SOLAR / LIFETIMESOLAR +
+                              OPEXFIXEDSOLAR) +
+               prated_solar * (
+                       CAPEX_VARIABLE_SOLAR / LIFETIMESOLAR +
+                       OPEXVARIABLESOLAR)] +
+              [non_zero_bat * (CAPEX_FIXED_BAT / LIFETIMEBAT +
+                               OPEX_FIXED_BAT) +
+               cap_bat * (
+                       CAPEX_VARIABLE_BAT / LIFETIMEBAT +
+                       OPEX_VARIABLE_BAT)] +
+              [max_grid_cons * CPOWERGRID])
 
-    print('--- %s seconds --- to add constraints' %
-          (time.time() - start_time_constraints))
+print('--- %s seconds --- to add constraints' %
+      (time.time() - start_time_constraints))
 
-    start_time = time.time()  # start counting
-    if optimize_with_gurobi:
-        prob.solve(GUROBI())
-    else:
-        prob.solve()
+start_time = time.time()  # start counting
+if optimize_with_gurobi:
+    prob.solve(GUROBI())
+else:
+    prob.solve()
 
-    time_to_solve = time.time() - start_time
-    print('--- %s seconds --- to solve' % time_to_solve)
-    print('CAPEX_VARIABLE_BAT = ',CAPEX_VARIABLE_BAT)
-    print('CAPEX_VARIABLE_SOLAR = ', CAPEX_VARIABLE_SOLAR)
-    print('optimized battery capacity: ', cap_bat.varValue, ' kWh')
-    print('Rated power of installation = ', prated_solar.varValue, ' kWp')
-    print('total cost of microgrid = ', value(prob.objective))
-    courbe_tendance_dict['variable_investment_cost_solar'] += [capex_var_solar]
-    courbe_tendance_dict['battery_capacity'] += [cap_bat.varValue]
-    courbe_tendance_dict['rated_power'] += [prated_solar.varValue]
-    courbe_tendance_dict['total_cost'] += [value(prob.objective)]
+time_to_solve = time.time() - start_time
+print('--- %s seconds --- to solve' % time_to_solve)
+#    print('CAPEX_VARIABLE_BAT = ',CAPEX_VARIABLE_BAT)
+#    print('CAPEX_VARIABLE_SOLAR = ', CAPEX_VARIABLE_SOLAR)
+#    print('optimized battery capacity: ', cap_bat.varValue, ' kWh')
+#    print('Rated power of installation = ', prated_solar.varValue, ' kWp')
+#    print('total cost of microgrid = ', value(prob.objective))
+#    courbe_tendance_dict['variable_investment_cost_solar'] += [capex_var_solar]
+#    courbe_tendance_dict['battery_capacity'] += [cap_bat.varValue]
+#    courbe_tendance_dict['rated_power'] += [prated_solar.varValue]
+#    courbe_tendance_dict['total_cost'] += [value(prob.objective)]
 
 if LpStatus[prob.status] == 'Optimal' and create_lp_file_if_feasible_and_less_than_49_hours and NUMBER_OF_HOURS < 49:
     now = datetime.now()
@@ -308,7 +307,7 @@ if LpStatus[prob.status] == 'Optimal' and create_lp_file_if_feasible_and_less_th
 
 print('total Cost of microgrid = ', value(prob.objective))
 print('total theoretical cost without microgrid: ' + str(sum([C_ENERGY_GRID[hour] * PCONS[hour] for hour in
-                                                              hours_considered_indices]) + PCONSMAX * CPOWERGRID) + ' CHF')
+                                                              range(len(hours_considered))]) + P_CONS_MAX * CPOWERGRID) + ' CHF')
 if print_variable_values_bool == 1:
     print_variable_values(prob)
 print('optimized battery capacity: ', cap_bat.varValue, ' kWh')
@@ -330,7 +329,7 @@ for c in m.getConstrs():
         print('%s' % c.constrName)
 '''
 
-sub_interval = range(2673, 2673 + 48)
+sub_interval = range(start_hour, start_hour + 48)
 hours_considered_set = set(hours_considered)
 interval = list(hours_considered_set.intersection(sub_interval))
 interval_indices = range(len(sub_interval))
@@ -360,7 +359,7 @@ data_dict['consumption_data'] = consumption_data
 data_dict['normalized_pv'] = pv_data
 
 c = 0
-for h in hours_considered_indices:
+for h in range(len(hours_considered)):
     if pv_battery[h] > 0 and battery_cons[h] > 0:
         print(h, ' charging and discharging at the same time')
         c += 1
@@ -468,16 +467,16 @@ if create_log_file:
     for key in constants:
         string_tmp += key + ' = ' + str(constants[key][0]) + ' ' + str(constants[key][1]) + '\n'
     string_tmp += 'LpStatus: ' + LpStatus[prob.status] + '\n'
-    string_tmp += 'optimized rated power of installation = ' + str(prated_solar.varValue) + ' kWp\n'
-    string_tmp += 'optimized battery capacity: ' + str(cap_bat.varValue) + ' kWh \n'
-    string_tmp += 'total cost: ' + str(value(prob.objective))[0:12] + ' CHF\n'
+    string_tmp += 'optimized rated power of installation = ' + str(round(prated_solar.varValue,3)) + ' kWp\n'
+    string_tmp += 'optimized battery capacity: ' + str(round(cap_bat.varValue,3)) + ' kWh\n'
+    string_tmp += 'total cost: ' + str(round(value(prob.objective),3)) + ' CHF\n'
     string_tmp += 'total cost if we only bought from the grid: ' + str(sum(
         [C_ENERGY_GRID[hour] * PCONS[hour] for hour in
-         hours_considered_indices]) + PCONSMAX * CPOWERGRID) + ' CHF\n'
-    string_tmp += 'max power taken from the grid: ' + str(max_grid_cons.varValue) + ' kW (at a cost of ' + str(
+         range(len(hours_considered))]) + P_CONS_MAX * CPOWERGRID) + ' CHF\n'
+    string_tmp += 'max power taken from the grid: ' + str(round(max_grid_cons.varValue,3)) + ' kW (at a cost of ' + str(
         CPOWERGRID) + ' CHF/kW)\n'
-    string_tmp += 'max power taken from grid without microgrid (max consumption):' + str(PCONSMAX) + 'kW\n'
-    string_tmp += 'time to solve LP = ' + str(time_to_solve) + ' seconds \n'
+    string_tmp += 'max power taken from grid without microgrid (max consumption):' + str(round(P_CONS_MAX,3)) + 'kW\n'
+    string_tmp += 'time to solve LP = ' + str(round(time_to_solve, 3)) + ' seconds\n'
     string_tmp += 'time resolution [hours] = ' + str(resolution) + '\n'
     file.write(string_tmp)
     string_tmp = '\ncontinuous pv rated power optimization with'
