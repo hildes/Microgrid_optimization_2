@@ -79,8 +79,8 @@ constants = {'CAP_MIN_BAT': [0.0, 'kWh'],  # 0
              'LIFETIME_BAT': [10, 'years'],  # 10
              'LIFETIME_SOLAR': [25, 'years'],  # 25
              'CAP_BAT_EV': [50, 'kWh'],
-             'ETA_CHARGE_EV': [0.95, ' '],
-             'ETA_DISCHARGE_EV': [0.95, ' '],
+             'ETA_CHARGE_EV': [0.99, ' '],
+             'ETA_DISCHARGE_EV': [0.99, ' '],
              'MIN_LEAVING_CHARGE_PERCENT_EV': [0.9, '%'],
              'REENTRY_CHARGE_PERCENT_EV': [0.25, '%'],
              'CCHARGE_MAX_EV': [1, 'kW/kWh'],
@@ -131,17 +131,17 @@ CCHARGE_MAX_EV = constants['CCHARGE_MAX_EV'][0]
 CDISCHARGE_MAX_EV = constants['CDISCHARGE_MAX_EV'][0]
 
 WEEK_DAY_PRESENCE = np.concatenate([np.full(7, 1), np.full(12, 0), np.full(5, 1)])
-MINIMAL_CHARGE_WEEK_DAY = np.concatenate([np.full(7, 15), np.full(12, 0), np.full(5, 15)])
 WEEKEND_DAY_PRESENCE = np.concatenate([np.full(9, 1), np.full(3, 0), np.full(2, 1), np.full(6, 0), np.full(4, 1)])
-MINIMAL_CHARGE_WEEKEND_DAY = np.concatenate(
-    [np.full(9, 15), np.full(3, 0), np.full(2, 10), np.full(6, 0), np.full(4, 15)])
+MINIMAL_CHARGE_WEEK_DAY_PERCENTAGE = np.concatenate([np.array([10]),np.full(5, 15),np.array([70]), np.full(12, 0), np.full(5, 15)])
+MINIMAL_CHARGE_WEEKEND_DAY_PERCENTAGE = np.concatenate(
+    [np.full(9, 15), np.full(3, 0), np.array([50,60]), np.full(6, 0), np.full(4, 15)])
 
 HOURLY_PRESENCE_WEEK = np.concatenate([np.tile(WEEK_DAY_PRESENCE, 5), np.tile(WEEKEND_DAY_PRESENCE, 2)])
-HOURLY_MINIMAL_CHARGE_WEEK = np.concatenate(
-    [np.tile(MINIMAL_CHARGE_WEEK_DAY, 5), np.tile(MINIMAL_CHARGE_WEEKEND_DAY, 2)])
+HOURLY_MINIMAL_CHARGE_WEEK_PERCENTAGE = np.concatenate(
+    [np.tile(MINIMAL_CHARGE_WEEK_DAY_PERCENTAGE, 5), np.tile(MINIMAL_CHARGE_WEEKEND_DAY_PERCENTAGE, 2)])
 HOURLY_PRESENCE_YEAR = np.concatenate([np.tile(HOURLY_PRESENCE_WEEK, 52), np.tile(WEEK_DAY_PRESENCE, 1)])
 HOURLY_MINIMAL_CHARGE_YEAR = np.concatenate(
-    [np.tile(HOURLY_MINIMAL_CHARGE_WEEK, 52), np.tile(MINIMAL_CHARGE_WEEK_DAY, 1)])  # a year has
+    [np.tile(HOURLY_MINIMAL_CHARGE_WEEK_PERCENTAGE, 52), np.tile(MINIMAL_CHARGE_WEEK_DAY_PERCENTAGE, 1)]) * CAP_BAT_EV / 100 # a year has
 # exactly (not really) 52 weeks and 1 day (365 - 7*52 = 1)
 
 HOURLY_PRESENCE_YEAR_HOURS = []
@@ -357,10 +357,11 @@ for c in m.getConstrs():
         print('%s' % c.constrName)
 '''
 
-sub_interval = range(start_hour, start_hour + 48)
+sub_interval = range(end_hour-72, end_hour-24)
 hours_considered_set = set(hours_considered)
 interval = list(hours_considered_set.intersection(sub_interval))
 interval_indices = range(len(interval))
+print(interval_indices)
 # interval = range(len(hours_considered))
 
 data_dict = {}
