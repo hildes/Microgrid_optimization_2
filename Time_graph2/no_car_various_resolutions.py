@@ -20,7 +20,7 @@ create_csv = 1
 create_tendance = 1
 create_plot = 1
 optimize_with_gurobi = 1  # CBC is the default solver used by pulp
-resolution = 1  # can be 1,1.5,2,2.5,3,4  # todo: resolution of 4/3=1.333, 6/5=1.2
+resolution = 1.5# can be 1,1.5,2,2.5,3,4  # todo: resolution of 4/3=1.333, 6/5=1.2
 averaging = False  # method of downsampling
 
 
@@ -54,7 +54,7 @@ consumption_data, pv_data = import_planair_data()
 constants = {'CAP_MIN_BAT': [0.0, 'kWh'],  # 0
              'CAP_MAX_BAT': [10, 'kWh'],  # 10
              'CAPEX_VARIABLE_BAT': [470, 'CHF/kWh'],  # 470
-             'CAPEX_FIXED_BAT': [3700, 'CHF'],  # 3700
+             'CAPEX_FIXED_BAT': [370, 'CHF'],  # 3700
              'OPEX_VARIABLE_BAT': [0, 'CHF/year/kWh'],  # 0
              'OPEX_FIXED_BAT': [0, 'CHF/year'],  # 0
              'P_RATED_MIN_SOLAR': [0, 'kWp'],  # 0
@@ -84,8 +84,8 @@ OPEX_FIXED_BAT = constants['OPEX_FIXED_BAT'][0]
 start_hour = 0
 end_hour = int(8760 / resolution)
 hours_considered = range(start_hour, end_hour)
-PCONS = [consumption_data[i] for i in hours_considered]
-PNORMSOLAR = [pv_data[i] for i in hours_considered]
+PCONS = [consumption_data[i]*resolution for i in hours_considered]
+PNORMSOLAR = [pv_data[i]*resolution for i in hours_considered]
 if resolution == 1.5:
     PCONS = []
     PNORMSOLAR = []
@@ -179,7 +179,7 @@ pv_pv_bat_edges = [(pv_nodes[hour], pv_bat_nodes[hour]) for hour in range(len(ho
 pv_bat_bat_edges = [(pv_bat_nodes[hour], battery_nodes[hour]) for hour in range(len(hours_considered))]
 bat_bat_cons_edges = [(battery_nodes[hour], bat_cons_nodes[hour]) for hour in range(len(hours_considered))]
 bat_cons_cons_edges = [(bat_cons_nodes[hour], consumption_nodes[hour]) for hour in range(len(hours_considered))]
-bat_bat_edges = [(battery_nodes[i], battery_nodes[i + 1]) for i in range(NUMBER_OF_HOURS)[:-1]]
+bat_bat_edges = [(battery_nodes[i], battery_nodes[i + 1]) for i in range(NUMBER_OF_HOURS)[:-1]] + [(battery_nodes[len(hours_considered)-1],battery_nodes[0])]
 cons_supersink_edges = [(consumption_nodes[hour], 'supersink') for hour in range(NUMBER_OF_HOURS)]
 pv_supersink_edges = [(pv_nodes[hour], 'supersink') for hour in range(NUMBER_OF_HOURS)]
 G.add_edges_from([supsupsrcPV_supsrcPV_edge] + supersource_cons_edges + supsrcPV_PV_edges
@@ -191,7 +191,7 @@ fixed_flow_bounds = {}
 fixed_arc_flow_cost = {}
 
 for e in supersource_cons_edges:
-    fixed_flow_bounds[e] = [0, PMAXEXTRACTEDGRID]
+    fixed_flow_bounds[e] = [0, PMAXEXTRACTEDGRID*resolution]
     fixed_arc_flow_cost[e] = C_ENERGY_GRID[node_hour(e[1]) - start_hour]  # 'supersource','Consumption' + str(hour)
 for e in pv_cons_edges:
     fixed_flow_bounds[e] = [0, 5 * P_CONS_MAX + 99999]
@@ -200,7 +200,7 @@ for e in cons_supersink_edges:
                             5 * P_CONS_MAX + 99999]  # upper bound could just be infinity
 for e in pv_supersink_edges:
     fixed_arc_flow_cost[e] = -CINJECTIONGRID[node_hour(e[0]) - start_hour]
-    fixed_flow_bounds[e] = [0, PMAXINJECTEDGRID]
+    fixed_flow_bounds[e] = [0, PMAXINJECTEDGRID*resolution]
 
 start_time_constraints = time.time()  # start counting
 
@@ -213,29 +213,6 @@ max_grid_cons = LpVariable('max_grid_cons', cat='Continuous')
 
 prob = LpProblem('Energy flow problem', LpMinimize)
 
-'''
-                                     [non_zero_pv * ((CAPEX_FIXED_SOLAR) / (LIFETIMESOLAR) + OPEX_FIXED_SOLAR) +
-               prated_solar * (
-                      CAPEX_VARIABLE_SOLAR / LIFETIMESOLAR + OPEX_VARIABLE_SOLAR)] +
-              [non_zero_bat * ((CAPEX_FIXED_BAT * len(hours_considered)) / (
-                      LIFETIMEBAT * 8760) + OPEX_FIXED_BAT) +
-               cap_bat * (
-                       CAPEX_VARIABLE_BAT * len(hours_considered) / (LIFETIMEBAT * 8760) + OPEX_VARIABLE_BAT)] +
-              
-'''
-
-'''
-lpSum([flow_vars[arc] * fixed_arc_flow_cost[arc] for arc in fixed_arc_flow_cost] +
-              [non_zero_pv * (CAPEX_FIXED_SOLAR * len(hours_considered) * resolution / (LIFETIMESOLAR * 8760) +
-                              OPEX_FIXED_SOLAR) + prated_solar * (
-                      CAPEX_VARIABLE_SOLAR * len(hours_considered) * resolution / (LIFETIMESOLAR * 8760) +
-                      OPEX_VARIABLE_SOLAR)] +
-              [non_zero_bat * ((CAPEX_FIXED_BAT * len(hours_considered) * resolution) / (LIFETIMEBAT * 8760) +
-                               OPEX_FIXED_BAT) + cap_bat * (
-                       CAPEX_VARIABLE_BAT * len(hours_considered) * resolution / (LIFETIMEBAT * 8760) +
-                       OPEX_VARIABLE_BAT)] +
-              [max_grid_cons * C_POWER_GRID])
-'''
 # fixed investment costs if there is >0 kWp installed
 (fixed_mins, fixed_maxs) = splitDict(fixed_flow_bounds)
 for arc_key in fixed_flow_bounds:
@@ -346,13 +323,13 @@ for c in m.getConstrs():
         print('%s' % c.constrName)
 '''
 
-sub_interval = range(start_hour, start_hour + 48)
+sub_interval = list(range(end_hour-48, end_hour))
+sub_interval = list(range(start_hour, start_hour+48))
 hours_considered_set = set(hours_considered)
 interval = list(hours_considered_set.intersection(sub_interval))
 interval_indices = range(len(sub_interval))
 interval_indices = sub_interval
-# interval = range(len(hours_considered))
-
+interval = sub_interval
 data_dict = {}
 
 grid_cons = [flow_vars[supersource_cons_edge].varValue for supersource_cons_edge in supersource_cons_edges]
@@ -370,7 +347,7 @@ lost_charging = [flow_vars[pv_pv_bat_edge].varValue * (1 - ETACHARGEBAT) for pv_
 data_dict['lost_charging'] = lost_charging
 pv_cons = [flow_vars[pv_cons_edge].varValue for pv_cons_edge in pv_cons_edges]
 data_dict['pv_cons'] = pv_cons
-battery_usage = [0] + [flow_vars[bat_bat_edge].varValue for bat_bat_edge in bat_bat_edges]
+battery_usage = [flow_vars[bat_bat_edge].varValue for bat_bat_edge in bat_bat_edges]
 data_dict['battery_usage'] = battery_usage
 data_dict['consumption_data'] = consumption_data
 data_dict['normalized_pv'] = pv_data
@@ -429,6 +406,9 @@ ax3.plot(sub_interval, np.full(len(interval_indices), cap_bat.varValue), label='
 ax3.set_ylabel('battery usage', fontsize=fontsize)
 ax3.set_xlabel('hours', fontsize=fontsize)
 ax3.plot(sub_interval, [battery_usage[i] for i in interval_indices], label='bat usage')
+#ax3.plot(list(list(range(end_hour-15, end_hour))+list(range(24))), [battery_usage[i] for i in interval_indices]+
+#         [flow_vars[(battery_nodes[NUMBER_OF_HOURS-1],battery_nodes[0])].varValue]+
+#         [flow_vars[(battery_nodes[i],battery_nodes[i+1])].varValue for i in range(23)], label='bat usage')
 ax3.title.set_text('Battery capacity = ' + str(cap_bat.varValue) + ' kW')
 
 ax4.plot(sub_interval, [lost_charging[i] for i in interval_indices], label='E lost charging')
@@ -504,3 +484,6 @@ if create_log_file:
         string_tmp += ' pulp free solver'
     file.write(string_tmp)
     file.close()
+
+
+print(flow_vars[(battery_nodes[NUMBER_OF_HOURS-1],battery_nodes[0])].varValue)

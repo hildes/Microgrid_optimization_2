@@ -362,7 +362,10 @@ hours_considered_set = set(hours_considered)
 interval = list(hours_considered_set.intersection(sub_interval))
 interval_indices = range(len(interval))
 print(interval_indices)
+print(interval)
 # interval = range(len(hours_considered))
+interval = sub_interval
+interval_indices = sub_interval
 
 data_dict = {}
 
