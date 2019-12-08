@@ -79,8 +79,8 @@ constants = {'CAP_MIN_BAT': [0.0, 'kWh'],  # 0
              'LIFETIME_BAT': [10, 'years'],  # 10
              'LIFETIME_SOLAR': [25, 'years'],  # 25
              'CAP_BAT_EV': [50, 'kWh'],
-             'ETA_CHARGE_EV': [0.99, ' '],
-             'ETA_DISCHARGE_EV': [0.99, ' '],
+             'ETA_CHARGE_EV': [0.95, ' '],
+             'ETA_DISCHARGE_EV': [0.95, ' '],
              'MIN_LEAVING_CHARGE_PERCENT_EV': [0.9, '%'],
              'REENTRY_CHARGE_PERCENT_EV': [0.25, '%'],
              'CCHARGE_MAX_EV': [1, 'kW/kWh'],
@@ -93,7 +93,7 @@ CAPEX_FIXED_BAT = constants['CAPEX_FIXED_BAT'][0]
 OPEX_VARIABLE_BAT = constants['OPEX_VARIABLE_BAT'][0]
 OPEX_FIXED_BAT = constants['OPEX_FIXED_BAT'][0]
 start_hour = 0
-end_hour = 8760
+end_hour = 1*48
 hours_considered = range(start_hour, end_hour)
 hours_considered_indices = range(len(hours_considered))
 PCONS = [consumption_data[i] for i in hours_considered]
@@ -139,9 +139,25 @@ MINIMAL_CHARGE_WEEKEND_DAY_PERCENTAGE = np.concatenate(
 HOURLY_PRESENCE_WEEK = np.concatenate([np.tile(WEEK_DAY_PRESENCE, 5), np.tile(WEEKEND_DAY_PRESENCE, 2)])
 HOURLY_MINIMAL_CHARGE_WEEK_PERCENTAGE = np.concatenate(
     [np.tile(MINIMAL_CHARGE_WEEK_DAY_PERCENTAGE, 5), np.tile(MINIMAL_CHARGE_WEEKEND_DAY_PERCENTAGE, 2)])
-HOURLY_PRESENCE_YEAR = np.concatenate([np.tile(HOURLY_PRESENCE_WEEK, 52), np.tile(WEEK_DAY_PRESENCE, 1)])
+NUMBER_OF_WEEKS = int(NUMBER_OF_HOURS/(24*7))
+REMAINING_DAYS = int((NUMBER_OF_HOURS - NUMBER_OF_WEEKS*24*7)/24)
+REMAINING_HOURS = int(NUMBER_OF_HOURS-NUMBER_OF_WEEKS*(24*7)-REMAINING_DAYS*(24))
+number_of_days = int(NUMBER_OF_HOURS/24)
+last_hours_presence = np.array([])
+last_hours_minimal_charge_perc = []
+if number_of_days % 7 in [5,6]:
+    last_hours_presence = np.array([WEEKEND_DAY_PRESENCE[i] for i in range(REMAINING_HOURS)])
+    last_hours_minimal_charge_perc = np.array([MINIMAL_CHARGE_WEEKEND_DAY_PERCENTAGE[i] for i in range(REMAINING_HOURS)])
+else:
+    last_hours_presence = np.array([WEEK_DAY_PRESENCE[i] for i in range(REMAINING_HOURS)])
+    last_hours_minimal_charge_perc = np.array([MINIMAL_CHARGE_WEEK_DAY_PERCENTAGE[i] for i in range(REMAINING_HOURS)])
+
+HOURLY_PRESENCE_YEAR = np.concatenate([np.tile(HOURLY_PRESENCE_WEEK, NUMBER_OF_WEEKS),
+                                       np.tile(WEEK_DAY_PRESENCE, REMAINING_DAYS), last_hours_presence])
 HOURLY_MINIMAL_CHARGE_YEAR = np.concatenate(
-    [np.tile(HOURLY_MINIMAL_CHARGE_WEEK_PERCENTAGE, 52), np.tile(MINIMAL_CHARGE_WEEK_DAY_PERCENTAGE, 1)]) * CAP_BAT_EV / 100 # a year has
+    [np.tile(HOURLY_MINIMAL_CHARGE_WEEK_PERCENTAGE, NUMBER_OF_WEEKS),
+     np.tile(MINIMAL_CHARGE_WEEK_DAY_PERCENTAGE, REMAINING_DAYS),
+     last_hours_minimal_charge_perc]) * CAP_BAT_EV / 100 # a year has
 # exactly (not really) 52 weeks and 1 day (365 - 7*52 = 1)
 
 HOURLY_PRESENCE_YEAR_HOURS = []
@@ -186,48 +202,50 @@ supsupsrcPV_supsrcPV_edge = ('supersupersourcePV', 'supersourcePV')
 pv_cons_edges = [(pv_nodes[hour], consumption_nodes[hour]) for hour in hours_considered_indices]
 pv_pv_bat_edges = [(pv_nodes[hour], pv_bat_nodes[hour]) for hour in hours_considered_indices]
 pv_bat_bat_edges = [(pv_bat_nodes[hour], battery_nodes[hour]) for hour in hours_considered_indices]
+print(pv_bat_bat_edges)
 bat_bat_cons_edges = [(battery_nodes[hour], bat_cons_nodes[hour]) for hour in hours_considered_indices]
 bat_cons_cons_edges = [(bat_cons_nodes[hour], consumption_nodes[hour]) for hour in hours_considered_indices]
 bat_bat_edges = [(battery_nodes[i], battery_nodes[i + 1]) for i in range(NUMBER_OF_HOURS)[:-1]]
 cons_supersink_edges = [(consumption_nodes[hour], 'supersink') for hour in range(NUMBER_OF_HOURS)]
 pv_supersink_edges = [(pv_nodes[hour], 'supersink') for hour in range(NUMBER_OF_HOURS)]
 ev_ev_edges = {}
+grid_ev_edges = {}
+ev_ev_bat_edges = {}
 for i in hours_considered:
     if i in ev_nodes and i+1 in ev_nodes:
         ev_ev_edges[i] = (ev_nodes[i],ev_nodes[i+1])
+    if i in ev_nodes:
+        grid_ev_edges[i] = ('supersource', ev_nodes[i])
+        ev_ev_bat_edges[i] = (ev_nodes[i], ev_bat_nodes[i])
 ev_ev_cons_edges = [(ev_nodes[key], ev_cons_nodes[key]) for key in ev_nodes]
 ev_cons_cons_edges = [(ev_cons_nodes[key], consumption_nodes[key]) for key in ev_nodes]
-grid_ev_edges = [('supersource', ev_nodes[key]) for key in ev_nodes]
 pv_ev_edges = [(pv_nodes[key], ev_nodes[key]) for key in ev_nodes]
 ev_sink_edges = [(ev_nodes[hour], 'EV_sink') for hour in LEAVING_THE_GARAGE_HOURS]
 source_ev_edges = [('EV_source', ev_nodes[hour]) for hour in ENTERING_THE_GARAGE_HOURS]
 bat_bat_ev_edges = [(battery_nodes[key], bat_ev_nodes[key]) for key in ev_nodes]
 bat_ev_ev_edges = [(bat_ev_nodes[key], ev_nodes[key]) for key in ev_nodes]
-ev_ev_bat_edges = [(ev_nodes[key], ev_bat_nodes[key]) for key in ev_nodes]
 ev_bat_bat_edges = [(ev_bat_nodes[key], battery_nodes[key]) for key in ev_nodes]
 
 G.add_edges_from([supsupsrcPV_supsrcPV_edge] + supersource_cons_edges + supsrcPV_PV_edges
                  + pv_cons_edges + pv_pv_bat_edges + pv_bat_bat_edges + bat_bat_cons_edges + bat_cons_cons_edges +
                  bat_bat_edges + cons_supersink_edges + pv_supersink_edges + list(ev_ev_edges.values()) +
-                 ev_ev_cons_edges + ev_cons_cons_edges + grid_ev_edges + pv_ev_edges + ev_sink_edges + source_ev_edges)
+                 ev_ev_cons_edges + ev_cons_cons_edges + list(grid_ev_edges.values()) + pv_ev_edges + ev_sink_edges + source_ev_edges+
+                 bat_bat_ev_edges + bat_ev_ev_edges + list(ev_ev_bat_edges.values()) + ev_bat_bat_edges)
 print('--- %s seconds --- to create graph' % (time.time() - start_time_graph))
 
 fixed_flow_bounds = {}
 fixed_arc_flow_cost = {}
 
 for e in supersource_cons_edges:
-    fixed_flow_bounds[e] = [0, P_MAX_EXTRACTED_GRID]
     fixed_arc_flow_cost[e] = C_ENERGY_GRID[node_hour(e[1])]  # 'supersource','Consumption' + str(hour)
-# for e in pv_cons_edges:
-#    fixed_flow_bounds[e] = [0, P_CONS_MAX]
 for e in cons_supersink_edges:
     fixed_flow_bounds[e] = [PCONS[node_hour(e[0]) - start_hour], 5*P_CONS_MAX + 999]  # upper bound could just be infinity
 for e in pv_supersink_edges:
     fixed_arc_flow_cost[e] = -CINJECTIONGRID[node_hour(e[0]) - start_hour]
     fixed_flow_bounds[e] = [0, P_MAX_INJECTED_GRID]
 
-for e in grid_ev_edges:
-    fixed_arc_flow_cost[e] = C_ENERGY_GRID[node_hour(e[1]) - start_hour]
+for key in grid_ev_edges:
+    fixed_arc_flow_cost[grid_ev_edges[key]] = C_ENERGY_GRID[key]
 
 start_time_constraints = time.time()  # start counting
 
@@ -256,10 +274,25 @@ for arc_key in fixed_flow_bounds:
     # prob += flow_vars[arc_key] <= fixed_maxs[arc_key]
     # prob += fixed_mins[arc_key] <= flow_vars[arc_key]
     flow_vars[arc_key].bounds(fixed_mins[arc_key], fixed_maxs[arc_key])
+
+for h in hours_considered:
+    if h in ev_nodes:
+        prob += lpSum([flow_vars[supersource_cons_edges[h]], flow_vars[grid_ev_edges[h]]]) <= P_MAX_EXTRACTED_GRID # todo: new constraint check that it's correct
+    else:
+        prob += flow_vars[supersource_cons_edges[h]] <= P_MAX_EXTRACTED_GRID
 for e in bat_bat_edges:
     prob += flow_vars[e] <= cap_bat, 'battery capacity' + str(e[0])
-for e in pv_pv_bat_edges:
-    prob += flow_vars[e] <= C_CHARGE_MAX_BAT * cap_bat, 'BAT charging rate' + str(e[0])
+
+
+for h in hours_considered:
+    if h in ev_nodes:
+        prob += lpSum([flow_vars[pv_pv_bat_edges[h]], flow_vars[ev_ev_bat_edges[h]]]) <= C_CHARGE_MAX_BAT * cap_bat, 'BAT charging rate' + str(h)
+    else:
+        prob += flow_vars[pv_pv_bat_edges[h]] <= C_CHARGE_MAX_BAT * cap_bat, 'BAT charging rate' + str(h)
+#for e in pv_pv_bat_edges:
+#    prob += flow_vars[e] <= C_CHARGE_MAX_BAT * cap_bat, 'BAT charging rate' + str(e[0])#todo: battery can be charged from PV or EV or both!
+
+
 for e in bat_bat_cons_edges:
     prob += flow_vars[e] <= C_DISCHARGE_MAX_BAT * cap_bat, 'BAT discharging rate' + str(e[0])
 for e in supersource_cons_edges:  # max power cost
@@ -269,9 +302,8 @@ for key in ev_ev_edges:
     prob += flow_vars[ev_ev_edges[key]] >= HOURLY_MINIMAL_CHARGE_YEAR[key]  # todo: make sure this is correct
 for e in ev_ev_cons_edges:
     prob += flow_vars[e] <= CDISCHARGE_MAX_EV * CAP_BAT_EV, 'EV discharging rate' + str(node_hour(e[0]))
-for e in grid_ev_edges:
-    prob += flow_vars[e] <= CCHARGE_MAX_EV * CAP_BAT_EV, 'EV charging rate' + str(node_hour(e[1]))
-    # prob += flow_vars[e] <= P_MAX_EXTRACTED_GRID, todo: grid->cons + grid->ev are what's extracted from the grid
+for key in grid_ev_edges:
+    prob += flow_vars[grid_ev_edges[key]] <= CCHARGE_MAX_EV * CAP_BAT_EV, 'EV charging rate' + str(key)
 for e in pv_ev_edges:
     prob += flow_vars[e] <= CCHARGE_MAX_EV * CAP_BAT_EV
 for e in ev_sink_edges:
@@ -357,12 +389,11 @@ for c in m.getConstrs():
         print('%s' % c.constrName)
 '''
 
-sub_interval = range(end_hour-72, end_hour-24)
+sub_interval = range(start_hour, start_hour+48)
 hours_considered_set = set(hours_considered)
 interval = list(hours_considered_set.intersection(sub_interval))
 interval_indices = range(len(interval))
-print(interval_indices)
-print(interval)
+
 # interval = range(len(hours_considered))
 interval = sub_interval
 interval_indices = sub_interval
@@ -378,9 +409,11 @@ data_dict['battery_cons'] = battery_cons
 lost_discharging = [flow_vars[bat_bat_cons_edge].varValue * (1 - ETA_DISCHARGE_BAT) for bat_bat_cons_edge in
                     bat_cons_cons_edges]
 data_dict['lost_discharging'] = lost_discharging
-pv_battery = [flow_vars[pv_pv_bat_edge].varValue for pv_pv_bat_edge in pv_pv_bat_edges]
+pv_battery = [flow_vars[e].varValue for e in pv_pv_bat_edges]
 data_dict['pv_battery'] = pv_battery
-lost_charging = [flow_vars[pv_pv_bat_edge].varValue * (1 - ETA_CHARGE_BAT) for pv_pv_bat_edge in pv_pv_bat_edges]
+
+
+lost_charging = [flow_vars[e].varValue * (1 - ETA_CHARGE_BAT) for e in pv_pv_bat_edges]
 data_dict['lost_charging'] = lost_charging
 pv_cons = [flow_vars[pv_cons_edge].varValue for pv_cons_edge in pv_cons_edges]
 data_dict['pv_cons'] = pv_cons
@@ -389,17 +422,21 @@ data_dict['battery_usage'] = battery_usage
 data_dict['consumption_data'] = consumption_data
 data_dict['normalized_pv'] = pv_data
 data_dict['EV_presence'] = HOURLY_PRESENCE_YEAR
-ev_ev = np.full(end_hour, 0)
+ev_ev = np.full(NUMBER_OF_HOURS, 0)
 for key in ev_ev_edges:
     ev_ev[key] = flow_vars[ev_ev_edges[key]].varValue
 data_dict['ev_ev'] = ev_ev
-ev_cons = np.full(end_hour, 0)
+ev_cons = np.full(NUMBER_OF_HOURS, 0)
 # ev_cons_cons_edges = [(ev_cons_nodes[key], consumption_nodes[key]) for key in ev_nodes]
 for h in ev_nodes:
     edge = (ev_cons_nodes[h], consumption_nodes[h])
-    r = flow_vars[edge].varValue
-    ev_cons[h] = r
+    ev_cons[h] = flow_vars[edge].varValue
 data_dict['ev_cons'] = ev_cons
+
+ev_battery = np.full(NUMBER_OF_HOURS,0)
+for key in ev_nodes:
+    ev_battery[key] = flow_vars[(ev_nodes[key], ev_bat_nodes[key])].varValue
+data_dict['ev_battery'] = ev_battery
 
 for h in hours_considered:
     if pv_battery[h] > 0 and battery_cons[h] > 0:
@@ -449,8 +486,10 @@ ax2.title.set_text('Energy cost: ' + str(C_ENERGY_GRID[0]) +
 ax3.plot(interval, [-battery_cons[i]
                     for i in interval_indices], label='bat -> cons', color='r')
 ax3.plot(interval, [pv_battery[i]
-                    for i in interval_indices], label='PV -> bat', color='g')
-ax3.plot(interval, np.full(len(interval_indices), cap_bat.varValue), label='bat capacity')
+                    for i in interval_indices], label='PV -> bat', color='lawngreen')
+ax3.plot(interval, [ev_battery[i]
+                    for i in interval_indices], label='EV -> bat', color='seagreen')
+ax3.plot(interval, np.full(len(interval_indices), cap_bat.varValue), label='bat capacity',color='darkorange')
 ax3.set_ylabel('battery usage', fontsize=fontsize)
 ax3.set_xlabel('hours', fontsize=fontsize)
 ax3.plot(interval, [battery_usage[i] for i in interval_indices], label='bat usage')
