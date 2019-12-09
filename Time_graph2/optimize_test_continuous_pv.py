@@ -19,6 +19,8 @@ create_csv = 1
 create_plot = 1
 optimize_with_gurobi = 1  # CBC is the default solver used by pulp
 
+#todo: pv_ev_nodes, grid_ev_edges to model loss of energy while charging the car
+#todo: energy lost charging (include EV)
 
 def import_planair_data():
     data_cons = pd.read_excel(
@@ -63,15 +65,15 @@ constants = {'CAP_MIN_BAT': [0.0, 'kWh'],  # 0
              'OPEX_FIXED_BAT': [0, 'CHF/year'],  # 0
              'P_RATED_MIN_SOLAR': [0, 'kWp'],  # 0
              'P_RATED_MAX_SOLAR': [25, 'kWp'],  # 25
-             'CAPEX_VARIABLE_SOLAR': [1200.0, 'CHF/kWp'],  # 1200.0  # CHF/kWp
-             'CAPEX_FIXED_SOLAR': [10000.0, 'CHF'],  # 10000.0  # fixed investment costs in CHF
+             'CAPEX_VARIABLE_SOLAR': [60.0, 'CHF/kWp'],  # 1200.0  # CHF/kWp
+             'CAPEX_FIXED_SOLAR': [100.0, 'CHF'],  # 10000.0  # fixed investment costs in CHF
              'OPEX_VARIABLE_SOLAR': [25, 'CHF/year/kWh'],  # 25
              'OPEX_FIXED_SOLAR': [0, 'CHF/year'],  # 0
              'BUYING_PRICE_GRID': [0.2, 'CHF/kWh'],  # 0.2
-             'SELLING_PRICE_GRID': [0.05, 'CHF/kWh'],  # 0.05
+             'SELLING_PRICE_GRID': [4.15, 'CHF/kWh'],  # 0.05
              'C_POWER_GRID': [80, 'CHF/kW'],  # 80
              'P_MAX_INJECTED_GRID': [10, 'kW'],  # 10
-             'P_MAX_EXTRACTED_GRID': [10, 'kW'],  # 10
+             'P_MAX_EXTRACTED_GRID': [20, 'kW'],  # 10
              'C_DISCHARGE_MAX_BAT': [1, 'kW/kWh'],  # 1
              'C_CHARGE_MAX_BAT': [1, 'kW/kWh'],  # 1
              'ETA_DISCHARGE_BAT': [0.95, ' '],  # 0.95
@@ -93,7 +95,7 @@ CAPEX_FIXED_BAT = constants['CAPEX_FIXED_BAT'][0]
 OPEX_VARIABLE_BAT = constants['OPEX_VARIABLE_BAT'][0]
 OPEX_FIXED_BAT = constants['OPEX_FIXED_BAT'][0]
 start_hour = 0
-end_hour = 1*48
+end_hour = 200*24
 hours_considered = range(start_hour, end_hour)
 hours_considered_indices = range(len(hours_considered))
 PCONS = [consumption_data[i] for i in hours_considered]
@@ -202,7 +204,6 @@ supsupsrcPV_supsrcPV_edge = ('supersupersourcePV', 'supersourcePV')
 pv_cons_edges = [(pv_nodes[hour], consumption_nodes[hour]) for hour in hours_considered_indices]
 pv_pv_bat_edges = [(pv_nodes[hour], pv_bat_nodes[hour]) for hour in hours_considered_indices]
 pv_bat_bat_edges = [(pv_bat_nodes[hour], battery_nodes[hour]) for hour in hours_considered_indices]
-print(pv_bat_bat_edges)
 bat_bat_cons_edges = [(battery_nodes[hour], bat_cons_nodes[hour]) for hour in hours_considered_indices]
 bat_cons_cons_edges = [(bat_cons_nodes[hour], consumption_nodes[hour]) for hour in hours_considered_indices]
 bat_bat_edges = [(battery_nodes[i], battery_nodes[i + 1]) for i in range(NUMBER_OF_HOURS)[:-1]]
@@ -289,8 +290,6 @@ for h in hours_considered:
         prob += lpSum([flow_vars[pv_pv_bat_edges[h]], flow_vars[ev_ev_bat_edges[h]]]) <= C_CHARGE_MAX_BAT * cap_bat, 'BAT charging rate' + str(h)
     else:
         prob += flow_vars[pv_pv_bat_edges[h]] <= C_CHARGE_MAX_BAT * cap_bat, 'BAT charging rate' + str(h)
-#for e in pv_pv_bat_edges:
-#    prob += flow_vars[e] <= C_CHARGE_MAX_BAT * cap_bat, 'BAT charging rate' + str(e[0])#todo: battery can be charged from PV or EV or both!
 
 
 for e in bat_bat_cons_edges:
@@ -363,12 +362,7 @@ if LpStatus[prob.status] == 'Optimal' and create_lp_file_if_feasible_and_less_th
     prob.writeLP('lp_files/' + dt_string + '_LP.lp')
 
 print('total Cost of microgrid = ', value(prob.objective))
-''' # hard to calculate in one folrmula as the EV battery can play a complex role in optimizing usage of grid and EV
-print('total theoretical cost without microgrid: '
-      + str(sum([C_ENERGY_GRID[hour] * PCONS[hour] for hour in hours_considered_indices] +
-                [C_ENERGY_CITY[h] * REENTRY_CHARGE_PERCENT_EV * CAP_BAT_EV for h in ENTERING_THE_GARAGE_HOURS]) +
-            P_CONS_MAX * C_POWER_GRID) + ' CHF')
-'''
+
 if print_variable_values_bool == 1:
     print_variable_values(prob)
 print('optimized battery capacity: ', cap_bat.varValue, ' kWh')
@@ -406,8 +400,7 @@ pv_grid = [flow_vars[pv_supersink_edge].varValue for pv_supersink_edge in pv_sup
 data_dict['pv_grid'] = pv_grid
 battery_cons = [flow_vars[bat_cons_cons_edge].varValue for bat_cons_cons_edge in bat_cons_cons_edges]
 data_dict['battery_cons'] = battery_cons
-lost_discharging = [flow_vars[bat_bat_cons_edge].varValue * (1 - ETA_DISCHARGE_BAT) for bat_bat_cons_edge in
-                    bat_cons_cons_edges]
+lost_discharging = [flow_vars[e].varValue * (1 - ETA_DISCHARGE_BAT) for e in bat_cons_cons_edges]
 data_dict['lost_discharging'] = lost_discharging
 pv_battery = [flow_vars[e].varValue for e in pv_pv_bat_edges]
 data_dict['pv_battery'] = pv_battery
