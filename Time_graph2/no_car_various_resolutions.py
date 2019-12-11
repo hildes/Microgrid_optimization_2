@@ -24,6 +24,13 @@ averaging = False  # method of downsampling
 circular_time = False
 create_tendance = False
 
+solver = ''
+
+if optimize_with_gurobi:
+    solver = 'Gurobi'
+else:
+    solver = 'pulp (CBC)'
+
 
 def import_planair_data():
     data_cons = pd.read_excel(
@@ -317,7 +324,8 @@ else:
     if optimize_with_gurobi:
         prob.solve(GUROBI())
     else:
-        prob.solve()
+        #prob.solve()
+        prob.solve(solvers.PULP_CBC_CMD(fracGap=1))
     time_to_solve = time.time() - start_time
     print('--- %s seconds --- to solve' % time_to_solve)
 
@@ -362,38 +370,40 @@ interval = sub_interval
 
 data_dict = {}
 
+data_dict['index'] = list(range(NUMBER_OF_HOURS))
+
 grid_cons = [flow_vars[supersource_cons_edge].varValue for supersource_cons_edge in supersource_cons_edges]
 data_dict['grid_cons'] = grid_cons
 
-tot_energy_bought = np.concatenate([[sum(grid_cons)],np.full(NUMBER_OF_HOURS,0)])
+tot_energy_bought = np.concatenate([[sum(grid_cons)],np.full(NUMBER_OF_HOURS-1,0)])
 data_dict['tot_energy_bought'] = tot_energy_bought
 
 pv_grid = [flow_vars[pv_supersink_edge].varValue for pv_supersink_edge in pv_supersink_edges]
 data_dict['pv_grid'] = pv_grid
 
-tot_energy_sold = np.concatenate([[sum(pv_grid)],np.full(NUMBER_OF_HOURS,0)])
+tot_energy_sold = np.concatenate([[sum(pv_grid)],np.full(NUMBER_OF_HOURS-1,0)])
 data_dict['tot_energy_sold'] = tot_energy_sold
 
-data_dict['tot_energy_produced_pv'] = np.concatenate([[sum(PNORMSOLAR) * prated_solar.varValue],np.full(NUMBER_OF_HOURS,0)])
+data_dict['tot_energy_produced_pv'] = np.concatenate([[sum(PNORMSOLAR) * prated_solar.varValue],np.full(NUMBER_OF_HOURS-1,0)])
 
 
-data_dict['rated_power'] = np.concatenate([[prated_solar.varValue],np.full(NUMBER_OF_HOURS,0)])
-data_dict['battery_capacity'] = np.concatenate([[cap_bat.varValue],np.full(NUMBER_OF_HOURS,0)])
-data_dict['max_power_bought'] = np.concatenate([[max_grid_cons.varValue],np.full(NUMBER_OF_HOURS,0)])
+data_dict['rated_power'] = np.concatenate([[prated_solar.varValue],np.full(NUMBER_OF_HOURS-1,0)])
+data_dict['battery_capacity'] = np.concatenate([[cap_bat.varValue],np.full(NUMBER_OF_HOURS-1,0)])
+data_dict['max_power_bought'] = np.concatenate([[max_grid_cons.varValue],np.full(NUMBER_OF_HOURS-1,0)])
 revenue_from_selling_energy = sum(pv_grid) * SELLING_PRICE_GRID
-data_dict['revenue_from_selling_energy'] = np.concatenate([[revenue_from_selling_energy],np.full(NUMBER_OF_HOURS,0)])
-data_dict['total_energy_consumed'] = np.concatenate([[sum(PCONS)],np.full(NUMBER_OF_HOURS,0)])
+data_dict['revenue_from_selling_energy'] = np.concatenate([[revenue_from_selling_energy],np.full(NUMBER_OF_HOURS-1,0)])
+data_dict['total_energy_consumed'] = np.concatenate([[sum(PCONS)],np.full(NUMBER_OF_HOURS-1,0)])
 pv_cons = [flow_vars[pv_cons_edge].varValue for pv_cons_edge in pv_cons_edges]
 data_dict['pv_cons'] = pv_cons
-data_dict['sum_pv_cons'] = np.concatenate([[sum(pv_cons)],np.full(NUMBER_OF_HOURS,0)])
+data_dict['sum_pv_cons'] = np.concatenate([[sum(pv_cons)],np.full(NUMBER_OF_HOURS-1,0)])
 battery_cons = [flow_vars[e].varValue for e in bat_cons_cons_edges]
 data_dict['battery_cons'] = battery_cons
-data_dict['sum_bat_cons_cons'] = np.concatenate([[sum(battery_cons)],np.full(NUMBER_OF_HOURS,0)])
+data_dict['sum_bat_cons_cons'] = np.concatenate([[sum(battery_cons)],np.full(NUMBER_OF_HOURS-1,0)])
 TOT_OPEX_SOLAR = non_zero_pv.varValue * OPEX_FIXED_SOLAR + prated_solar.varValue * OPEX_VARIABLE_SOLAR
-data_dict['TOT_OPEX_SOLAR'] = np.concatenate([[TOT_OPEX_SOLAR],np.full(NUMBER_OF_HOURS,0)])
+data_dict['TOT_OPEX_SOLAR'] = np.concatenate([[TOT_OPEX_SOLAR],np.full(NUMBER_OF_HOURS-1,0)])
 investment_solar = non_zero_pv.varValue * (CAPEX_FIXED_SOLAR / 1.0)+prated_solar.varValue * (
                            CAPEX_VARIABLE_SOLAR / 1.0)
-data_dict['investment_solar'] = np.concatenate([[investment_solar],np.full(NUMBER_OF_HOURS,0)])
+data_dict['investment_solar'] = np.concatenate([[investment_solar],np.full(NUMBER_OF_HOURS-1,0)])
 
 lost_discharging = [flow_vars[e].varValue * (1 - ETADISCHARGEBAT) for e in bat_cons_cons_edges]
 data_dict['lost_discharging'] = lost_discharging
@@ -403,9 +413,14 @@ lost_charging = [flow_vars[e].varValue * (1 - ETACHARGEBAT) for e in pv_pv_bat_e
 data_dict['lost_charging'] = lost_charging
 
 battery_usage = [flow_vars[e].varValue for e in bat_bat_edges]
+if not circular_time:
+    battery_usage = [0]+battery_usage
 data_dict['battery_usage'] = battery_usage
 data_dict['consumption_data'] = consumption_data
 data_dict['normalized_pv'] = pv_data
+
+data_dict['solver'] = np.concatenate([[solver],np.full(NUMBER_OF_HOURS-1,0)])
+data_dict['circular_time'] = np.concatenate([[circular_time],np.full(NUMBER_OF_HOURS-1,0)])
 
 c = 0
 for h in range(len(hours_considered)):
