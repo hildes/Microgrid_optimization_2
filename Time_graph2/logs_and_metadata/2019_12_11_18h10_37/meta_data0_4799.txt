@@ -1,0 +1,44 @@
+Information concerning this particular LP
+hours considered: [0,4799], including 4799
+Constants:
+CAP_MIN_BAT = 0.0 kWh
+CAP_MAX_BAT = 100 kWh
+CAPEX_VARIABLE_BAT = 1000 CHF/kWh
+CAPEX_FIXED_BAT = 2000 CHF
+OPEX_VARIABLE_BAT = 0 CHF/year/kWh
+OPEX_FIXED_BAT = 0 CHF/year
+P_RATED_MIN_SOLAR = 0 kWp
+P_RATED_MAX_SOLAR = 100 kWp
+CAPEX_VARIABLE_SOLAR = 1200.0 CHF/kWp
+CAPEX_FIXED_SOLAR = 10000.0 CHF
+OPEX_VARIABLE_SOLAR = 30 CHF/year/kWh
+OPEX_FIXED_SOLAR = 0 CHF/year
+BUYING_PRICE_GRID = 0.2 CHF/kWh
+SELLING_PRICE_GRID = 0.05 CHF/kWh
+C_POWER_GRID = 0 CHF/kW
+P_MAX_INJECTED_GRID = 100 kW
+P_MAX_EXTRACTED_GRID = 100 kW
+C_DISCHARGE_MAX_BAT = 1 kW/kWh
+C_CHARGE_MAX_BAT = 1 kW/kWh
+ETA_DISCHARGE_BAT = 0.95  
+ETA_CHARGE_BAT = 0.95  
+LIFETIME_BAT = 10 years
+LIFETIME_SOLAR = 25 years
+CAP_BAT_EV = 50 kWh
+ETA_CHARGE_EV = 0.95  
+ETA_DISCHARGE_EV = 0.95  
+MIN_LEAVING_CHARGE_PERCENT_EV = 0.9 %
+REENTRY_CHARGE_PERCENT_EV = 0.1 /1 (percentage)
+CCHARGE_MAX_EV = 1 kW/kWh
+CDISCHARGE_MAX_EV = 1 kW/kWh
+
+LpStatus: Optimal
+optimized rated power of installation = 15.648588128440535 kWp
+optimized battery capacity: 0.0 kWh 
+total cost: 6851.1362958 CHF
+total cost if we only bought from the grid: 125095.01699999979 CHF
+max power taken from the grid: 17.0 kW (at a cost of 0 CHF/kW)
+max power taken from grid without microgrid (max consumption): 16.31kW
+time to solve LP = 5.60794997215271 seconds 
+
+continuous pv rated power optimization with Gurobi

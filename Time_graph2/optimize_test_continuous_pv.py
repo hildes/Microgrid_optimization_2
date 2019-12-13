@@ -19,15 +19,16 @@ create_csv = 1
 create_plot = 1
 optimize_with_gurobi = 1  # CBC is the default solver used by pulp
 
+
 #todo: pv_ev_nodes, grid_ev_edges to model loss of energy while charging the car
 #todo: energy lost charging (include EV)
 
 def import_planair_data():
     data_cons = pd.read_excel(
-        r'/Users/stanislashildebrandt/Documents/GitHub/Microgrid_optimization/Time_graph2/energy_data/Conso.xlsx')
+        r'/Users/stanislashildebrandt/Documents/GitHub/Microgrid_optimization_2/Time_graph2/energy_data/Conso3.xlsx')
     data_pv = pd.read_excel(
-        r'/Users/stanislashildebrandt/Documents/GitHub/Microgrid_optimization/Time_graph2/energy_data/PV.xlsx')
-    return data_cons['kW'].values, data_pv['[kW]'].values
+        r'/Users/stanislashildebrandt/Documents/GitHub/Microgrid_optimization_2/Time_graph2/energy_data/PV3.xlsx')
+    return data_cons['kW'].values, data_pv['kW'].values
 
 
 def print_variable_values(prob):
@@ -58,22 +59,22 @@ consumption_data, pv_data = import_planair_data()
 # value, unit
 # in comment typical value from Christian
 constants = {'CAP_MIN_BAT': [0.0, 'kWh'],  # 0
-             'CAP_MAX_BAT': [10, 'kWh'],  # 10
-             'CAPEX_VARIABLE_BAT': [470, 'CHF/kWh'],  # 470
-             'CAPEX_FIXED_BAT': [3700, 'CHF'],  # 3700
+             'CAP_MAX_BAT': [100, 'kWh'],  # 10
+             'CAPEX_VARIABLE_BAT': [1000, 'CHF/kWh'],  # 470
+             'CAPEX_FIXED_BAT': [2000, 'CHF'],  # 3700
              'OPEX_VARIABLE_BAT': [0, 'CHF/year/kWh'],  # 0
              'OPEX_FIXED_BAT': [0, 'CHF/year'],  # 0
              'P_RATED_MIN_SOLAR': [0, 'kWp'],  # 0
-             'P_RATED_MAX_SOLAR': [25, 'kWp'],  # 25
-             'CAPEX_VARIABLE_SOLAR': [60.0, 'CHF/kWp'],  # 1200.0  # CHF/kWp
-             'CAPEX_FIXED_SOLAR': [100.0, 'CHF'],  # 10000.0  # fixed investment costs in CHF
-             'OPEX_VARIABLE_SOLAR': [25, 'CHF/year/kWh'],  # 25
+             'P_RATED_MAX_SOLAR': [100, 'kWp'],  # 25
+             'CAPEX_VARIABLE_SOLAR': [1200.0, 'CHF/kWp'],  # 1200.0  # CHF/kWp
+             'CAPEX_FIXED_SOLAR': [10000.0, 'CHF'],  # 10000.0  # fixed investment costs in CHF
+             'OPEX_VARIABLE_SOLAR': [30, 'CHF/year/kWh'],  # 25
              'OPEX_FIXED_SOLAR': [0, 'CHF/year'],  # 0
              'BUYING_PRICE_GRID': [0.2, 'CHF/kWh'],  # 0.2
-             'SELLING_PRICE_GRID': [4.15, 'CHF/kWh'],  # 0.05
-             'C_POWER_GRID': [80, 'CHF/kW'],  # 80
-             'P_MAX_INJECTED_GRID': [10, 'kW'],  # 10
-             'P_MAX_EXTRACTED_GRID': [20, 'kW'],  # 10
+             'SELLING_PRICE_GRID': [0.05, 'CHF/kWh'],  # 0.05
+             'C_POWER_GRID': [0, 'CHF/kW'],  # 80
+             'P_MAX_INJECTED_GRID': [100, 'kW'],  # 10
+             'P_MAX_EXTRACTED_GRID': [100, 'kW'],  # 10
              'C_DISCHARGE_MAX_BAT': [1, 'kW/kWh'],  # 1
              'C_CHARGE_MAX_BAT': [1, 'kW/kWh'],  # 1
              'ETA_DISCHARGE_BAT': [0.95, ' '],  # 0.95
@@ -84,7 +85,7 @@ constants = {'CAP_MIN_BAT': [0.0, 'kWh'],  # 0
              'ETA_CHARGE_EV': [0.95, ' '],
              'ETA_DISCHARGE_EV': [0.95, ' '],
              'MIN_LEAVING_CHARGE_PERCENT_EV': [0.9, '%'],
-             'REENTRY_CHARGE_PERCENT_EV': [0.25, '%'],
+             'REENTRY_CHARGE_PERCENT_EV': [0.1, '/1 (percentage)'],
              'CCHARGE_MAX_EV': [1, 'kW/kWh'],
              'CDISCHARGE_MAX_EV': [1, 'kW/kWh']
              }
@@ -102,7 +103,7 @@ PCONS = [consumption_data[i] for i in hours_considered]
 NUMBER_OF_HOURS = end_hour - start_hour  # len(hours_considered)
 P_CONS_MAX = max(PCONS)
 # production curve for installation of 1kW rated power
-PNORMSOLAR = [pv_data[i] for i in hours_considered]
+PNORMSOLAR = [pv_data[i] * (1/42.832721) for i in hours_considered]
 P_RATED_MIN_SOLAR = constants['P_RATED_MIN_SOLAR'][0]
 P_RATED_MAX_SOLAR = constants['P_RATED_MAX_SOLAR'][0]
 PGENSOLAR = np.array([PNORMSOLAR[i] for i in range(len(PNORMSOLAR))])
