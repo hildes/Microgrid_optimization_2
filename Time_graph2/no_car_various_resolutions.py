@@ -14,6 +14,7 @@ import csv
 import matplotlib.cm as cm
 import colorsys
 import seaborn as sns
+from pulp import solvers
 
 print("HELLO")
 create_graphml_obj = 0  # do you want to create a graph object?
@@ -77,7 +78,7 @@ constants = {'CAP_MIN_BAT': [0.0, 'kWh'],  # 0 OK
              'OPEX_FIXED_SOLAR': [0, 'CHF/year'],  # 0 OK
              'BUYING_PRICE_GRID': [0.2 * resolution, 'CHF'],  # 0.2 OK
              'SELLING_PRICE_GRID': [0.05 * resolution, 'CHF'],  # 0.05 OK
-             'C_POWER_GRID': [0, 'CHF/kW'],  # 80 Prix de la puissance soutirée ([CHF/kW]) OK
+             'C_POWER_GRID': [0.0, 'CHF/kW'], #0.00001 # 80 Prix de la puissance soutirée ([CHF/kW]) OK
              'PMAXINJECTEDGRID': [100, 'kW'],  # 10 OK...
              'PMAXEXTRACTEDGRID': [100, 'kW'],  # 10 OK
              'C_DISCHARGE_MAX_BAT': [1, 'kW/kWh'],  # 1 OK
@@ -288,8 +289,8 @@ courbe_tendance_dict = {'variable_investment_cost_solar': [],
                         'total_cost': []}
 
 
-capex_var_solar_values = [500,700,800,900,1000,1100,1200,1300,1400,1500,1600] #  1200 typique
-capex_var_bat_values = [10,20,25,45,70,100,135,175,220,270,325,385,450] #  1000 typique
+capex_var_solar_values = [1200]#[400,500,600,700,800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000] #  1200 typique
+capex_var_bat_values = [1000]#[5,10,20,25,45,70,100,135,175,220,270,325,385,450,520] #  1000 typique
 
 bat_capacity_matrix = np.zeros((len(capex_var_bat_values), len(capex_var_solar_values)))
 rated_power_matrix = np.zeros((len(capex_var_bat_values), len(capex_var_solar_values)))
@@ -315,11 +316,22 @@ if create_tendance:
                    cap_bat * (
                            CAPEX_VARIABLE_BAT / LIFETIMEBAT +
                            OPEX_VARIABLE_BAT)] +
-                  [max_grid_cons * C_POWER_GRID])
+                          [max_grid_cons * C_POWER_GRID])
 
+
+            prob.writeLP('temporary_LP.lp')
+            #m = gurobipy.read(
+            #    '/Users/stanislashildebrandt/Documents/GitHub/Microgrid_optimization_2/Time_graph2/temp_LP.lp')
+            #m.optimize()
             start_time = time.time()  # start counting
-            prob.solve(GUROBI())
+            if optimize_with_gurobi:
+                prob.solve(GUROBI())
+            else:
+                # prob.solve()
+                prob.solve(solvers.PULP_CBC_CMD(fracGap=1.1))
             time_to_solve = time.time() - start_time
+            print('--- %s seconds --- to solve' % time_to_solve)
+
             print('--- %s seconds --- to solve' % time_to_solve)
 
             print('CAPEX_VARIABLE_BAT = ',CAPEX_VARIABLE_BAT)
@@ -327,12 +339,17 @@ if create_tendance:
             print('optimized battery capacity: ', cap_bat.varValue, ' kWh')
             print('Rated power of installation = ', prated_solar.varValue, ' kWp')
             print('total cost of microgrid = ', value(prob.objective))
-            courbe_tendance_dict['variable_investment_cost_solar'] += [capex_var_solar]
-            courbe_tendance_dict['variable_investment_cost_battery'] += [capex_var_bat]
-            rated_power_matrix[battery_index][solar_index] = round(prated_solar.varValue,1)
+            #courbe_tendance_dict['variable_investment_cost_solar'] += [capex_var_solar]
+            #courbe_tendance_dict['variable_investment_cost_battery'] += [capex_var_bat]
+            rated_power_matrix[battery_index][solar_index] = round(prated_solar.varValue,6)
             bat_capacity_matrix[battery_index][solar_index] = round(cap_bat.varValue,1)
             total_cost_matrix[battery_index][solar_index] = round(value(prob.objective),1)
             max_power_matrix[battery_index][solar_index] = round(max_grid_cons.varValue,1)
+
+            #rated_power_matrix[battery_index][solar_index] = 100.0
+            #bat_capacity_matrix[battery_index][solar_index] = 101.0
+            #total_cost_matrix[battery_index][solar_index] = 7465.2
+            #max_power_matrix[battery_index][solar_index] = 16.3
 
     print('rated_power_matrix')
     print(rated_power_matrix)
@@ -341,94 +358,64 @@ if create_tendance:
     print('total_cost_matrix')
     print(total_cost_matrix)
 
+
+
     fig, ax = plt.subplots()
     im = ax.imshow(bat_capacity_matrix)
-
-    # We want to show all ticks...
     ax.set_xticks(np.arange(len(capex_var_solar_values)))
     ax.set_yticks(np.arange(len(capex_var_bat_values)))
-    # ... and label them with the respective list entries
     ax.set_xticklabels(capex_var_solar_values)
     ax.set_yticklabels(capex_var_bat_values)
-
-    # Rotate the tick labels and set their alignment.
     plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
-
-    # Loop over data dimensions and create text annotations.
     for i in range(len(capex_var_bat_values)):
         for j in range(len(capex_var_solar_values)):
             text = ax.text(j, i, bat_capacity_matrix[i, j],
-                           ha="center", va="center", color="w")
-
+                           ha="center", va="center", color="w",fontsize=6)
     ax.set_title("Price effect on battery capacity [kWh]")
     fig.tight_layout()
     plt.show()
 
     fig, ax = plt.subplots()
     im = ax.imshow(rated_power_matrix)
-
-    # We want to show all ticks...
     ax.set_xticks(np.arange(len(capex_var_solar_values)))
     ax.set_yticks(np.arange(len(capex_var_bat_values)))
-    # ... and label them with the respective list entries
     ax.set_xticklabels(capex_var_solar_values)
     ax.set_yticklabels(capex_var_bat_values)
-
-    # Rotate the tick labels and set their alignment.
     plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
-
-    # Loop over data dimensions and create text annotations.
     for i in range(len(capex_var_bat_values)):
         for j in range(len(capex_var_solar_values)):
             text = ax.text(j, i, rated_power_matrix[i, j],
-                           ha="center", va="center", color="w")
-
+                           ha="center", va="center", color="w",fontsize=6)
     ax.set_title("Price effect on rated power [kWp]")
     fig.tight_layout()
     plt.show()
 
     fig, ax = plt.subplots()
     im = ax.imshow(total_cost_matrix)
-
-    # We want to show all ticks...
     ax.set_xticks(np.arange(len(capex_var_solar_values)))
     ax.set_yticks(np.arange(len(capex_var_bat_values)))
-    # ... and label them with the respective list entries
     ax.set_xticklabels(capex_var_solar_values)
     ax.set_yticklabels(capex_var_bat_values)
-
-    # Rotate the tick labels and set their alignment.
     plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
-
-    # Loop over data dimensions and create text annotations.
     for i in range(len(capex_var_bat_values)):
         for j in range(len(capex_var_solar_values)):
             text = ax.text(j, i, total_cost_matrix[i, j],
-                           ha="center", va="center", color="w")
-
+                           ha="center", va="center", color="w",fontsize=5)
     ax.set_title("Price effect on total annual cost [CHF]")
     fig.tight_layout()
     plt.show()
 
     fig, ax = plt.subplots()
     im = ax.imshow(max_power_matrix)
-
-    # We want to show all ticks...
     ax.set_xticks(np.arange(len(capex_var_solar_values)))
     ax.set_yticks(np.arange(len(capex_var_bat_values)))
-    # ... and label them with the respective list entries
     ax.set_xticklabels(capex_var_solar_values)
     ax.set_yticklabels(capex_var_bat_values)
-
-    # Rotate the tick labels and set their alignment.
     plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
-
-    # Loop over data dimensions and create text annotations.
     for i in range(len(capex_var_bat_values)):
         for j in range(len(capex_var_solar_values)):
             text = ax.text(j, i, max_power_matrix[i, j],
-                           ha="center", va="center", color="w")
-
+                           ha="center", va="center", color="w",fontsize = 6)
     ax.set_title("Price effect on maximum power extracted [kW]")
     fig.tight_layout()
     plt.show()
@@ -474,7 +461,7 @@ print('Rated power of installation = ', prated_solar.varValue, ' kWp')
 ''' # if infeasible, this points to an impossible constraint
 print('The model is infeasible; computing IIS')
 prob.writeLP('infeasible_LP.lp')
-m = gurobipy.read('/Users/stanislashildebrandt/Documents/GitHub/Microgrid_optimization/Time_graph2/infeasible_LP.lp')
+m = gurobipy.read('/Users/stanislashildebrandt/Documents/GitHub/Microgrid_optimization_2/Time_graph2/infeasible_LP.lp')
 m.computeIIS()
 if m.IISMinimal:
   print('IIS is minimal\n')
